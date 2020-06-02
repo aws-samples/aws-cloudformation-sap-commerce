@@ -1,0 +1,177 @@
+apply plugin: 'installer-platform-plugin'
+apply plugin: 'installer-addon2-plugin'
+
+def pl = platform {
+    localProperties {
+        property 'initialpassword.admin', 'nimda'
+        property 'commerceservices.default.desktop.ui.experience', 'responsive'
+        property 'csrf.allowed.url.patterns', '/[^/]+(/[^?]*)+(sop/response)$,/[^/]+(/[^?]*)+(merchant_callback)$,/[^/]+(/[^?]*)+(hop/response)$,/[^/]+(/[^?]*)+(language)$,/[^/]+(/[^?]*)+(currency)$,/[^/]+(/[^?]*)+(alipay)+/(.)*$,/[^/]+(/[^?]*)+(wechat)+/(.)*$'
+        property 'task.polling.interval.min', '0'
+    }
+
+    afterSetup {
+        ensureAdminPasswordSet()
+    }    
+
+    extensions {
+
+        extensionNames 'adaptivesearchsolr',
+         'adaptivesearchbackoffice',
+         'adaptivesearchsamplesaddon',
+         'adaptivesearchwebservices',
+         'commerceservicesbackoffice',
+         'solrfacetsearchbackoffice',
+         'solrserver',
+         'yacceleratorbackoffice',
+         'yacceleratorinitialdata',
+         'yacceleratorfulfilmentprocess',
+         'yacceleratorstorefront',
+         'ycommercewebservices',
+         'ycommercewebservicestest',
+
+         'electronicsstore',
+
+         'acceleratorwebservicesaddon',
+         'orderselfserviceaddon',
+
+         'customersupportbackoffice',
+         'customerticketingaddon',
+         'commerceorgsamplesaddon',
+
+         'rulebuilderbackoffice',
+         'couponbackoffice',
+         'droolsruleengineservices',
+         'couponfacades',
+         'couponservices',
+         'promotionenginesamplesaddon',
+
+         'cmswebservices',
+         'smarteditwebservices',
+         'cmssmarteditwebservices',
+         'permissionswebservices',
+         'smarteditaddon',
+         'cmssmartedit',
+         'cmsbackoffice',
+         'cmsoccaddon',
+
+         'previewpersonalizationweb',
+         'personalizationcmsweb',
+         'personalizationsmartedit',
+         'personalizationpromotionssmartedit',
+         'personalizationsampledataaddon',
+         'personalizationpromotionssampledataaddon',
+         'personalizationpromotions',
+         'personalizationpromotionsweb',
+         'personalizationservicesbackoffice',
+         'personalizationpromotionsbackoffice',
+         'personalizationcmsbackoffice',
+         'personalizationsearchbackoffice',
+         'personalizationsearchsmartedit',
+         'personalizationsearchweb',
+         'personalizationsearchsamplesaddon',
+
+         'textfieldconfiguratortemplatebackoffice',
+         'textfieldconfiguratortemplateaddon',
+         'assistedservicestorefront',
+         'assistedservicewebservices',
+         'assistedservicepromotionaddon',
+
+         'pcmbackofficesamplesaddon',
+
+         'chineseprofileaddon',
+         'chineseprofileoccaddon',
+         'chineselogisticaddon',
+         'chineselogisticbackoffice',
+         'chineselogisticoccaddon',
+
+         'chinesepaymentaddon',
+         'chinesepaymentoccaddon',
+         'chinesepaymentmock',
+         'chinesetaxinvoiceaddon',
+         'chinesetaxinvoiceoccaddon',
+         'chinesetaxinvoicebackoffice',
+         'chinesepspalipaysamplesaddon',
+         'chinesepspalipaysbackoffice',
+         'chinesestoreaddon',
+         'verticalnavigationaddon',
+
+         'chineseaddressaddon',
+         'chineseaddressoccaddon',
+         'chineseaddressbackoffice',
+
+         'chinesepspwechatpaymentaddon',
+         'chinesepspwechatpaysamplesaddon',
+         'chinesepspwechatpaysbackoffice',
+
+         'consignmenttrackingaddon',
+         'consignmenttrackingmock',
+         'consignmenttrackingbackoffice',
+
+         'notificationaddon',
+         'customerinterestsaddon',
+         'stocknotificationaddon',
+         'chineseproductsharingaddon',
+
+         'selectivecartaddon',
+
+         'customercouponaddon',
+         'customercouponsamplesaddon',
+         'customercouponbackoffice',
+
+         'timedaccesspromotionengineaddon',
+         'timedaccesspromotionenginesamplesaddon',
+         'timedaccesspromotionenginebackoffice',
+         'timedaccesspromotionengineoccaddon',
+         'messagecentercsoccaddon',
+         'consignmenttrackingoccaddon',
+         'customerinterestsoccaddon',
+         'customercouponoccaddon',
+         'notificationoccaddon',
+
+         'outboundservices',
+         'odata2webservices',
+         'odata2webservicesfeaturetests',
+
+         'kymaintegrationbackoffice'
+    }
+
+    addons {
+
+        forStoreFronts('yacceleratorstorefront'){
+            names 'chineseprofileaddon,chineselogisticaddon,chinesepaymentaddon,chinesetaxinvoiceaddon,chinesepspalipaysamplesaddon,chinesestoreaddon,verticalnavigationaddon,chineseaddressaddon,chinesepspwechatpaymentaddon,chinesepspwechatpaysamplesaddon,consignmenttrackingaddon,notificationaddon,customerinterestsaddon,stocknotificationaddon,chineseproductsharingaddon,selectivecartaddon,customercouponaddon,customercouponsamplesaddon,commerceorgsamplesaddon,promotionenginesamplesaddon,smarteditaddon,textfieldconfiguratortemplateaddon,assistedservicestorefront,assistedservicepromotionaddon,customerticketingaddon,orderselfserviceaddon,adaptivesearchsamplesaddon,timedaccesspromotionengineaddon,timedaccesspromotionenginesamplesaddon,personalizationsearchsamplesaddon,pcmbackofficesamplesaddon'
+            template 'yacceleratorstorefront'
+        }
+
+        forStoreFronts('ycommercewebservices'){
+            names 'acceleratorwebservicesaddon,messagecentercsoccaddon,consignmenttrackingoccaddon,customerinterestsoccaddon,customercouponoccaddon,notificationoccaddon,cmsoccaddon,chineseaddressoccaddon,chinesetaxinvoiceoccaddon,timedaccesspromotionengineoccaddon,chineselogisticoccaddon,chineseprofileoccaddon,chinesepaymentoccaddon'
+            template 'ycommercewebservices'
+        }
+    }
+
+}
+
+
+task setup {
+    doLast {
+        pl.setup()
+    }
+}
+
+task buildSystem(dependsOn: setup) {
+    doLast {
+        pl.build()
+    }
+}
+
+task initialize(dependsOn: buildSystem) {
+    doLast {
+        pl.initialize()
+    }
+}
+
+
+task start {
+    doLast {
+        pl.start()
+    }
+}

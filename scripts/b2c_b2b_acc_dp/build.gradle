@@ -1,0 +1,183 @@
+apply plugin: 'installer-platform-plugin'
+apply plugin: 'installer-addon2-plugin'
+
+def pl = platform {
+    localProperties {
+        property 'initialpassword.admin', 'nimda'
+        property 'googleApiKey', ''
+        property 'website.electronics.http', 'http://electronics.local:9001/yacceleratorstorefront'
+        property 'website.electronics.https', 'https://electronics.local:9002/yacceleratorstorefront'
+        property 'website.apparel-de.http', 'http://apparel-de.local:9001/yacceleratorstorefront'
+        property 'website.apparel-de.https', 'https://apparel-de.local:9002/yacceleratorstorefront'
+        property 'website.apparel-uk.http', 'http://apparel-uk.local:9001/yacceleratorstorefront'
+        property 'website.apparel-uk.https', 'https://apparel-uk.local:9002/yacceleratorstorefront'
+        property 'website.powertools.http', 'http://powertools.local:9001/yb2bacceleratorstorefront'
+        property 'website.powertools.https', 'https://powertools.local:9002/yb2bacceleratorstorefront'
+        property 'setup.siteoverride', 'true'
+        property 'cis.client.payment.mock', 'false'
+        property 'site.pci.strategy', 'HOP'
+        property 'yb2bacceleratorstorefront.illegalrequirementstest.excluded', 'true'
+    }
+
+    afterSetup {
+        ensureAdminPasswordSet()
+    }
+    
+    extensions {
+        extName 'adaptivesearchsolr'
+        extName 'adaptivesearchbackoffice'
+        extName 'adaptivesearchsamplesaddon'
+        extName 'b2bcommercebackoffice'
+        extName 'solrfacetsearchbackoffice'
+
+        extName 'yacceleratorbackoffice'
+        extName 'yacceleratorinitialdata'
+        extName 'yacceleratorordermanagement'
+        extName 'yacceleratorstorefront'
+        extName 'ycommercewebservices'
+
+        extName 'apparelstore'
+        extName 'electronicsstore'
+        extName 'powertoolsstore'
+        extName 'solrserver'
+
+        extName 'acceleratorwebservicesaddon'
+        extName 'b2bacceleratoraddon'
+        extName 'commerceorgaddon'
+        extName 'commerceorgsamplesaddon'
+        extName 'orderselfserviceaddon'
+
+        extName 'rulebuilderbackoffice'
+        extName 'couponbackoffice'
+        extName 'droolsruleengineservices'
+        extName 'couponfacades'
+        extName 'couponservices'
+        extName 'promotionenginesamplesaddon'
+
+        extName 'textfieldconfiguratortemplatebackoffice'
+        extName 'textfieldconfiguratortemplateaddon'
+
+        extName 'cmswebservices'
+        extName 'smarteditwebservices'
+        extName 'permissionswebservices'
+        extName 'smarteditaddon'
+        extName 'cmssmartedit'
+        extName 'previewwebservices'
+        extName 'cmssmarteditwebservices'
+        extName 'cmsoccaddon'
+
+        extName 'previewpersonalizationweb'
+        extName 'personalizationcmsweb'
+        extName 'personalizationsmartedit'
+        extName 'personalizationsampledataaddon'
+        extName 'personalizationpromotionssampledataaddon'
+        extName 'personalizationpromotions'
+        extName 'personalizationpromotionsweb'
+        extName 'personalizationservicesbackoffice'
+        extName 'personalizationpromotionsbackoffice'
+        extName 'personalizationcmsbackoffice'
+
+        extName 'pcmbackofficesamplesaddon'
+
+        extName 'assistedservicestorefront'
+        extName 'assistedservicewebservices'
+        extName 'customerticketingaddon'
+        extName 'customersupportbackoffice'
+        extName 'ticketsystembackoffice'
+        extName 'consignmenttrackingbackoffice'
+        extName 'ordermanagementaddon'
+        extName 'consignmenttrackingaddon'
+
+        extName 'warehousing'
+        extName 'warehousingbackoffice'
+
+        extName 'cisclient'
+        extName 'cispayment'
+        scanPath '${HYBRIS_BIN_DIR}/ext-integration/sap/digitalPayments'
+        extName 'cissapdigitalpayment'
+        extName 'ysapdpordermanagement'
+        extName 'sapdigitalpaymentaddon'
+        extName 'sapdigitalpaymentb2baddon'
+        extName 'sapdigitalpaymentbackoffice'
+
+        extName 'consignmenttrackingoccaddon'
+
+        /* integration-apis */
+        extName 'outboundservices'
+        extName 'odata2webservices'
+        extName 'odata2webservicesfeaturetests'
+
+        extName 'kymaintegrationbackoffice'
+
+        extName 'yb2bacceleratorstorefront'
+    }
+
+    addons {
+        forStoreFronts('yacceleratorstorefront,yb2bacceleratorstorefront') {
+            names('commerceorgsamplesaddon', 'assistedservicestorefront', 'customerticketingaddon', 'promotionenginesamplesaddon',
+                    'textfieldconfiguratortemplateaddon', 'orderselfserviceaddon', 'smarteditaddon', 'adaptivesearchsamplesaddon',
+                    'pcmbackofficesamplesaddon', 'ordermanagementaddon', 'orderselfserviceaddon', 'consignmenttrackingaddon', 'sapdigitalpaymentaddon')
+            template 'yacceleratorstorefront'
+        }
+
+        forStoreFronts('yb2bacceleratorstorefront') {
+            names 'b2bacceleratoraddon', 'commerceorgaddon', 'sapdigitalpaymentb2baddon'
+            template 'yacceleratorstorefront'
+        }
+
+        forStoreFronts('ycommercewebservices') {        
+            names 'acceleratorwebservicesaddon', 'consignmenttrackingoccaddon', 'cmsoccaddon'
+            template 'ycommercewebservices'
+        }
+    }
+}
+
+task createStoreFrontExt {
+    doLast {
+        def prePlatform = platformFactory.createPlatform()
+        prePlatform.createConfigDirIfNotExist()
+        prePlatform.resetConfig()
+
+        prePlatform.createExtension {
+            templateName 'yacceleratorstorefront'
+            extensionName 'yb2bacceleratorstorefront'
+            packageName 'de.hybris.platform.yb2bacceleratorstorefront'
+        }
+    }
+}
+
+task setup(dependsOn: createStoreFrontExt) {
+    doLast {
+        pl.setup()
+    }
+}
+
+task buildSystem(dependsOn: setup) {
+    doLast {
+        pl.build()
+    }
+}
+
+task initialize(dependsOn: buildSystem) {
+    doLast {
+        pl.initialize()
+    }
+}
+
+task start {
+    doLast {
+        pl.start()
+    }
+}
+
+task startInBackground {
+    doLast {
+        pl.startInBackground()
+    }
+}
+
+task stopInBackground {
+    doLast {
+        pl.stopInBackground()
+    }
+}

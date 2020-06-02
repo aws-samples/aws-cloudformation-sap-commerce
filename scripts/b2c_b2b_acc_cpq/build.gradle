@@ -1,0 +1,212 @@
+apply plugin: 'installer-platform-plugin'
+apply plugin: 'installer-addon2-plugin'
+
+def pl = platform {
+	localProperties {
+		property 'initialpassword.admin', 'nimda'
+		property 'googleApiKey', ''
+		property 'website.electronics.http', 'http://electronics.local:9001/yacceleratorstorefront'
+		property 'website.electronics.https', 'https://electronics.local:9002/yacceleratorstorefront'
+		property 'website.apparel-de.http', 'http://apparel-de.local:9001/yacceleratorstorefront'
+		property 'website.apparel-de.https', 'https://apparel-de.local:9002/yacceleratorstorefront'
+		property 'website.apparel-uk.http', 'http://apparel-uk.local:9001/yacceleratorstorefront'
+		property 'website.apparel-uk.https', 'https://apparel-uk.local:9002/yacceleratorstorefront'
+		property 'website.powertools.http', 'http://powertools.local:9001/yb2bacceleratorstorefront'
+		property 'website.powertools.https', 'https://powertools.local:9002/yb2bacceleratorstorefront'
+		property 'setup.siteoverride', 'true'
+		property 'yb2bacceleratorstorefront.illegalrequirementstest.excluded', 'true'
+
+		/* CPQ related Properties / only required if use SSC Engine */
+		/* ******************************************************** */
+		/* The type the DBMS you use for storing knowledge bases: MySQL, Microsoft SQL Server 2, Oracle */
+		property 'crm.system_type', 'MySQL'
+		/* DB host example localhost*/
+		property 'crm.database_hostname', 'localhost'
+		/* DB ID */
+		property 'crm.database', 'ssc'
+		/* DB port example 3306*/
+		property 'crm.database_port', '3306'
+		/* DB user*/
+		property 'crm.database_user', 'sscuser'
+		/* DB password*/
+		property 'crm.database_password', '1234'
+		/* DB ssc jndi usage enabled*/
+		property 'crm.ssc_jndi_usage', 'false'
+		/* jndi datasource*/
+		property 'crm.ssc_jndi_datasource', 'jdbc/SSC_IPC'
+	}
+
+    afterSetup {
+        ensureAdminPasswordSet()
+    }	
+
+	extensions {
+
+		scanPath '${HYBRIS_BIN_DIR}/ext-integration/sap'
+
+		/* b2c_b2b_acc related extensions */
+		/* ****************************** */
+		/* solr search */
+		extensionNames  'adaptivesearchsolr', 'adaptivesearchbackoffice', 'adaptivesearchsamplesaddon', 'adaptivesearchwebservices', 'b2bcommercebackoffice', 'solrfacetsearchbackoffice', 'solrserver'
+		/* templates */
+		extensionNames 'yacceleratorbackoffice', 'yacceleratorinitialdata', 'yacceleratorfulfilmentprocess', 'yacceleratorstorefront', 'ycommercewebservices', 'ycommercewebservicestest'
+		/* demo stores */
+		extensionNames 'apparelstore', 'electronicsstore', 'powertoolsstore'
+		/* addons */
+		extensionNames 'acceleratorwebservicesaddon', 'b2bacceleratoraddon', 'commerceorgaddon', 'commerceorgsamplesaddon', 'orderselfserviceaddon'
+		/* ASM */
+		extensionNames 'assistedservicestorefront', 'assistedservicewebservices', 'customerticketingaddon', 'customersupportbackoffice'
+		/* rules */
+		extensionNames 'rulebuilderbackoffice', 'couponbackoffice', 'droolsruleengineservices', 'couponfacades', 'promotionenginesamplesaddon','couponservices'
+		/* text field configurator */
+		extensionNames 'textfieldconfiguratortemplatebackoffice', 'textfieldconfiguratortemplateaddon'
+		/* CMS / smartedit */
+		extensionNames 'cmswebservices', 'smarteditwebservices', 'permissionswebservices', 'smarteditaddon', 'cmssmartedit', 'cmsbackoffice', 'previewwebservices', 'cmssmarteditwebservices', 'cmsoccaddon'
+		/* personalization */
+		extensionNames 'previewpersonalizationweb', 'personalizationcmsweb', 'personalizationsmartedit', 'personalizationpromotionssmartedit', 'personalizationsampledataaddon', 'personalizationpromotionssampledataaddon', 'personalizationpromotions'
+		extensionNames 'personalizationpromotionsweb', 'personalizationservicesbackoffice', 'personalizationpromotionsbackoffice', 'personalizationcmsbackoffice', 'personalizationsearchbackoffice', 'personalizationsearchsmartedit', 'personalizationsearchweb'
+		extensionNames 'personalizationsearchsamplesaddon', 'pcmbackofficesamplesaddon'
+		/* integration-apis */
+		extensionNames 'outboundservices', 'odata2webservices', 'odata2webservicesfeaturetests'
+		/* kyma integration */
+		extensionNames 'kymaintegrationbackoffice'
+
+
+		/* CPQ ENGINE: select exactly one engine from the three below, deploying several engines in parallel is not supported. */
+		/* ******************************************************************************************************************* */
+		/* MOCK Engine: contains a standalone engine for demo/test purpose */
+		extensionNames 'sapproductconfigruntimemock'
+		/* SSC Engine: contains the full engine for productive on premise use */
+		extensionNames 'sapproductconfigruntimessc', 'sapproductconfigservicesssc', 'sapproductconfigbackofficessc'
+		/* CPS Engine: contains the connector for the cloud engine for productive use */
+		extensionNames 'sapproductconfigruntimecps', 'sapproductconfigbackofficecps'
+
+		/* optional extensions for SSC Engine: SCPI */
+		extensionNames 'sapproductconfigcpiorderexchangessc'
+		/* optional extensions for CPS Engine:  SCPI, analytics, rules */
+		extensionNames 'sapproductconfigcpiorderexchangecps', 'sapproductconfigruntimepci', 'sapproductconfigrulescps'
+
+		/* CPQ ENGINE independent extensions */
+		/* ********************************* */
+		/* mandatory extensions for CPQ */
+		extensionNames 'ysapproductconfigaddon', 'sapproductconfigbackoffice'
+		/* optional extensions for B2B */
+		extensionNames 'sapproductconfigb2b','sapproductconfigb2bservices','sapproductconfigb2baddon'
+		/* optional extensions for rules */
+		extensionNames 'sapproductconfigrules', 'sapproductconfigrulesbackoffice', 'sapproductconfigrulescps'
+		/* optional extensions for SCPI Callidus integration*/
+		extensionNames 'sapproductconfigcpiquoteexchange'
+
+
+		/* generated B2B storefront */
+      extName 'yb2bacceleratorstorefront'
+	}
+    
+    addons {
+        forStoreFronts('yacceleratorstorefront,yb2bacceleratorstorefront') {
+            names 'commerceorgsamplesaddon', 'assistedservicestorefront', 'customerticketingaddon', 'promotionenginesamplesaddon', 'textfieldconfiguratortemplateaddon',
+                    'orderselfserviceaddon', 'smarteditaddon', 'ysapproductconfigaddon', 'adaptivesearchsamplesaddon', 'pcmbackofficesamplesaddon', 'personalizationsearchsamplesaddon'
+            template 'yacceleratorstorefront'
+        }
+
+        forStoreFronts('yb2bacceleratorstorefront') {
+            names 'b2bacceleratoraddon', 'sapproductconfigb2baddon', 'commerceorgaddon'
+            template 'yacceleratorstorefront'
+        }
+
+        forStoreFronts('ycommercewebservices') {
+            names 'acceleratorwebservicesaddon,cmsoccaddon'
+            template 'ycommercewebservices'
+        }
+    }
+}
+
+/* remove this check if you use MOCK or CPS engine */
+def checkForSSCLib() {
+    def defaultSSCLibDir = file("${project.rootDir}/../hybris/bin/modules/sap-product-configuration-on-premise-edition/sapproductconfigruntimessc/lib")
+    def binCustomDir = file("${project.rootDir}/../hybris/bin/custom")
+    def patternSSCLib = ~/com\.sap\.custdev\.projects\.fbs\.slc\.engine-/
+    def patternSSCLibDir = ~/[\/|\\]sapproductconfigruntimessc[\/|\\]lib|sap\.hybris\.productconfig\.runtime\.ssc[\/|\\]lib/
+    def sscLibFound = false
+
+    def findFilenameClosure = {
+        if (patternSSCLib.matcher(it.name).find()) {
+            println "\t Found: ${it.name} (size ${it.size()})"
+            sscLibFound = true
+        }
+    }
+
+    def findSSCDirClosure = {
+        if (patternSSCLibDir.matcher(it.path).find()) {
+            it.eachFileRecurse(findFilenameClosure)
+        }
+    }
+
+    println "\nChecking for SSC engine library..."
+    if (defaultSSCLibDir.exists()) {
+        defaultSSCLibDir.eachFileRecurse(findFilenameClosure)
+    } else {
+        if (binCustomDir.exists()) {
+            binCustomDir.eachDirRecurse(findSSCDirClosure)
+        }
+    }
+
+    if (!sscLibFound) {
+        println("FAILED: SSC engine library not found!")
+        throw new InvalidUserDataException("Please download SAP CPQ Configuration Runtime (SSC libraries) from the SAP Software Download Center at http://support.sap.com/swdc under 'Support Packages and Patches'. In the alphabetical list of products, choose 'C' and then 'SAP CPQ PRODUCT CONFIG' -> 'SAP CPQ PRODUCT CONFIG [current release]'. Install it according to SAP CPQ installation guide.")
+    } else {
+        println("SUCCESS: SSC engine library found.")
+    }
+}
+
+task createStoreFrontExt {
+    doLast {
+        def prePlatform = platformFactory.createPlatform()
+        prePlatform.createConfigDirIfNotExist()
+        prePlatform.resetConfig()
+
+        prePlatform.createExtension {
+            templateName 'yacceleratorstorefront'
+            extensionName 'yb2bacceleratorstorefront'
+            packageName 'de.hybris.platform.yb2bacceleratorstorefront'
+        }
+    }
+}
+
+task setup(dependsOn: createStoreFrontExt) {
+	doLast {
+		/* remove this check if you use MOCK or CPS engine */
+		checkForSSCLib()
+		pl.setup()
+	}
+}
+
+task buildSystem(dependsOn: setup) {
+	doLast {
+		pl.build()
+	}
+}
+
+task initialize(dependsOn: buildSystem) {
+	doLast {
+		pl.initialize()
+	}
+}
+
+task start {
+	doLast {
+		pl.start()
+	}
+}
+
+task startInBackground {
+    doLast {
+        pl.startInBackground()
+    }
+}
+
+task stopInBackground {
+    doLast {
+        pl.stopInBackground()
+    }
+}

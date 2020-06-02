@@ -1,0 +1,339 @@
+apply plugin: 'installer-platform-plugin'
+apply plugin: 'installer-addon2-plugin'
+apply plugin: 'installer-datahub-plugin'
+
+def thePlatform = platform {
+
+	localProperties {
+
+		property 'initialpassword.admin', 'nimda'
+		
+		/* properties from hybris platform b2b + b2c in parallel recipe */
+		property 'website.electronics.http', 'http://electronics.local:9001/yacceleratorstorefront'
+		property 'website.electronics.https', 'https://electronics.local:9002/yacceleratorstorefront'
+		property 'website.apparel-de.http', 'http://apparel-de.local:9001/yacceleratorstorefront'
+		property 'website.apparel-de.https', 'https://apparel-de.local:9002/yacceleratorstorefront'
+		property 'website.apparel-uk.http', 'http://apparel-uk.local:9001/yacceleratorstorefront'
+		property 'website.apparel-uk.https', 'https://apparel-uk.local:9002/yacceleratorstorefront'
+		property 'website.powertools.http', 'http://powertools.local:9001/yb2bacceleratorstorefront'
+		property 'website.powertools.https', 'https://powertools.local:9002/yb2bacceleratorstorefront'
+
+		property 'yb2bacceleratorstorefront.illegalrequirementstest.excluded', 'true'
+
+		/* please adapt the number ranges according to the settings in the ERP backend */
+		property 'keygen.customer.sap_customer_id.start', '0000490000'
+		property 'keygen.customer.sap_contact_id.start', '0000490000'
+
+		/* config async order management - order number */
+		property 'keygen.order.code.start', '0006200000'
+
+		property 'sapcustomerexchange.outbound.datahub.feed', 'SAPCONSUMER_OUTBOUND_FEED'
+
+		/* config sapcoreconfiguration */
+		property 'sapcoreconfiguration.datahuboutbound.enabled', 'true'
+
+		/* config async order management */
+		property 'numberseries.cache.size.order_code', '1'
+		property 'saporderexchange.orderoutbound.maxRetries', '3'
+		property 'log4j.logger.de.hybris.platform.sap.orderexchange', 'debug'
+		property 'datahubadapter.datahuboutbound.url', 'https://localhost:9793/datahub-webapp/v1'
+
+		/* setting starting number for returnorder generation for each logical system (multi-backend scenario) that is set in backoffice */
+		property 'keygen.returnorder.code.xs1', 'externalsystem1'
+		property 'keygen.returnorder.code.start.xs1', '6200500'
+		property 'keygen.returnorder.code.xs2', 'externalsystem2'
+		property 'keygen.returnorder.code.start.xs2', '0065019302'
+
+		property 'build.parallel', 'false'
+	}
+	
+	afterSetup {
+        ensureAdminPasswordSet()
+    }
+
+	extensions {
+
+		/* Main extensions from b2c_b2b_acc_oms recipe */
+		extName 'ordermanagementaddon'
+		extName 'orderselfserviceaddon'
+		extName 'ordermanagementwebservices'
+		extName 'b2bordermanagementwebservices'
+
+		extName 'warehousing'
+		extName 'warehousingbackoffice'
+		extName 'warehousingwebservices'
+
+		extName 'adaptivesearchsolr'
+		extName 'adaptivesearchbackoffice'
+		extName 'b2bcommercebackoffice'
+		extName 'commerceservicesbackoffice'
+
+		extName 'yacceleratorbackoffice'
+		extName 'yacceleratorinitialdata'
+		extName 'yacceleratorstorefront'
+		extName 'yaddon'
+		extName 'ycommercewebservices'
+		extName 'cmsoccaddon'
+
+		extName 'apparelstore'
+		extName 'electronicsstore'
+		extName 'powertoolsstore'
+		extName 'solrserver'
+
+		extName 'acceleratorwebservicesaddon'
+		extName 'b2bacceleratoraddon'
+		extName 'commerceorgaddon'
+
+		extName 'assistedservicestorefront'
+		extName 'customerticketingaddon'
+		extName 'customersupportbackoffice'
+		extName 'ticketsystembackoffice'
+		extName 'consignmenttrackingbackoffice'
+
+		extName 'rulebuilderbackoffice'
+		extName 'couponbackoffice'
+		extName 'droolsruleengineservices'
+		extName 'couponfacades'
+		extName 'promotionenginesamplesaddon'
+		extName 'consignmenttrackingaddon'
+
+		extName 'pcmbackofficesamplesaddon'
+
+		/* Additional extensions needed for SAP integration */
+		extName 'secureportaladdon'
+		extName 'datahubbackoffice'
+
+		/* SAP integration scenario extensions */
+		scanPath '${HYBRIS_BIN_DIR}/ext-integration/sap'
+		extName 'sapcoreaddon'
+		extName 'sapcoreconfigurationbackoffice'
+		extName 'sapmodelbackoffice'
+
+		extName 'sapcustomerb2bbackoffice'
+
+		extName 'b2bsappricing'
+		extName 'sappricingbackoffice'
+
+		extName 'ysapomsfulfillment'
+		extName 'saporderexchangeb2b'
+		extName 'saporderexchange'
+		extName 'saporderexchangeoms'
+		extName 'saporderexchangeomsb2b'
+		extName 'saporderexchangebackoffice'
+
+		extName 'sapcreditcheckbackoffice'
+
+		extName 'sapcoretest'
+
+		/* extensions needed for order return */
+		extName 'sapreturnsexchange'
+		extName 'sapreturnsexchangeb2b'
+		extName 'ysapomsreturnprocess'
+		extName 'sapreturnsbackoffice'
+
+		extName 'consignmenttrackingoccaddon'
+
+		/* integration-apis */
+		extName 'outboundservices'
+		extName 'odata2webservices'
+		extName 'odata2webservicesfeaturetests'
+
+		extName 'kymaintegrationbackoffice'
+
+		extName 'yb2bacceleratorstorefront'
+	}
+
+	addons {
+		forStoreFronts('yacceleratorstorefront') {
+			names('assistedservicestorefront', 'customerticketingaddon', 'promotionenginesamplesaddon', 'ordermanagementaddon',
+					'orderselfserviceaddon', 'consignmenttrackingaddon', 'sapcoreaddon', 'pcmbackofficesamplesaddon')
+			template 'yacceleratorstorefront'
+		}
+
+		forStoreFronts('yb2bacceleratorstorefront') {
+			names('b2bacceleratoraddon', 'commerceorgaddon', 'assistedservicestorefront', 'customerticketingaddon', 'promotionenginesamplesaddon',
+					'orderselfserviceaddon', 'consignmenttrackingaddon', 'secureportaladdon', 'sapcoreaddon', 'pcmbackofficesamplesaddon')
+			template 'yacceleratorstorefront'
+		}
+
+		forStoreFronts('ycommercewebservices') {
+			names 'acceleratorwebservicesaddon', 'consignmenttrackingoccaddon', 'cmsoccaddon'
+			template 'ycommercewebservices'
+		}
+	}
+}
+
+def CATALINA_OPTS = "-Xms4096m -Xmx4096m -Dspring.profiles.active=no_auth"
+
+def datahubServerId = 'datahub-tomcat'
+
+def datahubWebappHome = "${platformHome}/../ext-integration/datahub/web-app"
+
+def datahubCfg = {
+
+	libraries {
+
+		propertyFile "local.properties", {
+
+			/* datahub settings */
+			property 'datahub.extension.exportURL', 'https://localhost:9002/datahubadapter'
+			property 'datahub.extension.userName', 'admin'
+			property 'datahub.extension.password', passwd()
+			property 'datahub.encryption.key.path', 'encryption-key.txt'
+			property 'datahub.server.url', 'https://localhost:9793/datahub-webapp/v1'
+
+			/* common settings */
+			property 'targetsystem.hybriscore.url', 'https://localhost:9002/datahubadapter'
+			property 'targetsystem.hybriscore.username', 'admin'
+			property 'targetsystem.hybriscore.password', passwd()
+
+			property 'targetsystem.saperp.url', 'http://saperp.url'
+			property 'targetsystem.saperp.username', 'username'
+			property 'targetsystem.saperp.password', 'password'
+			property 'targetsystem.saperp.receivername', 'ERP RFC destination name'
+
+			/* sapcoreconfiguration and saperpreturnorder */
+			property(
+					'sapcoreconfiguration.autocompose.pools',
+					'GLOBAL,SAPCONFIGURATION_POOL,SAPCUSTOMER_INBOUND_POOL,SAPCONSUMER_INBOUND_POOL,SAPCONSUMER_OUTBOUND_POOL,SAPORDER_INBOUND_POOL,SAPORDER_OUTBOUND_POOL,SAPRETURNORDER_OUTBOUND_POOL,SAPORDER_OUTBOUND_S4HANA_POOL')
+			property(
+					'sapcoreconfiguration.autopublish.targetsystemsbypools',
+					'GLOBAL.HybrisCore,GLOBAL.SapErpSystem,SAPCUSTOMER_INBOUND_POOL.HybrisCore,SAPCONSUMER_INBOUND_POOL.HybrisCore,SAPCONSUMER_OUTBOUND_POOL.SapErpSystem,SAPORDER_OUTBOUND_POOL.SapErpSystem,SAPORDER_INBOUND_POOL.HybrisCore,SAPRETURNORDER_OUTBOUND_POOL.ErpSystem,SAPORDER_OUTBOUND_S4HANA_POOL.SapS4HanaSystem')
+			property 'sapcoreconfiguration.autopublish.sleeptime', '5000'
+			property 'sapcoreconfiguration.autopublish.initialsleeptime', '5000'
+			property 'sapcoreconfiguration.pool', 'SAPCONFIGURATION_POOL'
+
+			/* sapreturnorder */
+			property 'sapreturnorder.outboundpool', 'SAPRETURNORDER_OUTBOUND_POOL'
+
+			/* sapcustomer */
+			property 'sapcustomer.language', 'en'
+
+			/* sapidocoutboundadapter */
+			property 'sapidocoutboundadapter.usedynamicidocnumberoffset', 'true'
+			property 'sapidocoutboundadapter.receivername', 'ERP RFC destination name'
+			property 'sapidocoutboundadapter.sendername', 'sendername'
+			property 'sapidocoutboundadapter.senderport', 'senderport'
+		}
+	}
+
+	extensionDir platformHome + "/../ext-integration/datahub/extensions/sap"
+	extensions(
+			'sapcoreconfiguration',
+			'sapidocintegration',
+			'sapidocoutboundadapter',
+			'party-canonical',
+			'product-canonical',
+			'sapcustomer-raw',
+			'sapcustomer-canonical',
+			'sapcustomer-target',
+			'saporder-raw',
+			'saporder-canonical',
+			'saporder-target',
+			'saperpproduct-raw',
+			'saperpproduct-canonical',
+			'saperpproduct-target',
+			'sappricing-raw',
+			'sappricing-canonical',
+			'sappricing-target',
+			'saperpreturnorder-raw',
+			'saperpreturnorder-canonical',
+			'saperpreturnorder-target'
+	)
+
+	extensionDir platformHome + "/../ext-integration/datahub/extensions/saporderoms"
+	extensions(
+			'saporderoms-raw',
+			'saporderoms-canonical',
+			'saporderoms-target'
+	)
+
+	webappDir datahubWebappHome
+
+	ports {
+		http 8080
+		ssl 9793
+	}
+}
+
+task createStoreFrontExt {
+	doLast {
+		def prePlatform = platformFactory.createPlatform()
+		prePlatform.createConfigDirIfNotExist()
+		prePlatform.resetConfig()
+
+		prePlatform.createExtension {
+			templateName 'yacceleratorstorefront'
+			extensionName 'yb2bacceleratorstorefront'
+			packageName 'de.hybris.platform.yb2bacceleratorstorefront'
+		}
+	}
+}
+
+task setupPlatform(dependsOn: createStoreFrontExt) {
+	doLast {
+		thePlatform.setup()
+	}
+}
+
+task setupDataHub {
+	doLast {
+		datahub(datahubServerId).setup datahubCfg
+		new File((File) buildDir, "../../../work/datahub-tomcat/lib/encryption-key.txt").write '8fae27b02e4e64dfb79f18947743b6f9'
+	}
+}
+
+task validateDataHub {
+	doLast {
+		if (!file(datahubWebappHome).exists()) {
+			throw new InvalidUserDataException("Please download the datahub zip from Extension Marketplace and unpack it to ${datahubWebappHome}")
+		}
+	}
+}
+
+setupDataHub.mustRunAfter validateDataHub
+setupPlatform.mustRunAfter validateDataHub
+
+task setup(dependsOn: [validateDataHub, setupPlatform, setupDataHub])
+
+task startDataHub {
+	doLast {
+		datahub(datahubServerId).start CATALINA_OPTS
+	}
+}
+
+task stopDataHub {
+	doLast {
+		datahub(datahubServerId).stop()
+	}
+}
+
+task buildSystem(dependsOn: [setup]) {
+	doLast {
+		thePlatform.build()
+	}
+}
+
+task initialize(dependsOn: buildSystem) {
+	doLast {
+		datahub(datahubServerId).start CATALINA_OPTS
+		thePlatform.initialize()
+		datahub(datahubServerId).stop()
+	}
+}
+
+task startPlatform {
+	doLast {
+		thePlatform.startInBackground()
+	}
+}
+
+task stopPlatform {
+	doLast {
+		thePlatform.stopInBackground()
+	}
+}
+
+task start(dependsOn: [startDataHub, startPlatform])
+
+task stop(dependsOn: [stopDataHub, stopPlatform])

@@ -1,0 +1,137 @@
+apply plugin: 'installer-platform-plugin'
+apply plugin: 'installer-addon2-plugin'
+
+def pl = platform {
+    localProperties {
+        property 'initialpassword.admin', 'nimda'
+        property 'googleApiKey', ''
+    }
+
+    afterSetup {
+        ensureAdminPasswordSet()
+    }    
+
+    extensions {
+        extensionNames 'adaptivesearchsolr',
+         'adaptivesearchbackoffice',
+         'adaptivesearchwebservices',
+         'adaptivesearchsamplesaddon',
+         'commerceservicesbackoffice',
+         'solrfacetsearchbackoffice',
+         'solrserver',
+         'yacceleratorbackoffice',
+         'yacceleratorinitialdata',
+         'yacceleratorfulfilmentprocess',
+         'yacceleratorstorefront',
+         'yacceleratormarketplaceintegration',
+         'ycommercewebservices',
+         'ycommercewebservicestest',
+
+         'acceleratorwebservicesaddon',
+         'orderselfserviceaddon',
+
+         'customersupportbackoffice',
+         'customerticketingaddon',
+         'commerceorgsamplesaddon',
+
+         'rulebuilderbackoffice',
+         'couponbackoffice',
+         'droolsruleengineservices',
+         'couponfacades',
+         'couponservices',
+         'promotionenginesamplesaddon',
+         'marketplacepromotionenginesamplesaddon',
+
+         'cmswebservices',
+         'smarteditwebservices',
+         'permissionswebservices',
+         'smarteditaddon',
+         'cmssmartedit',
+         'cmsbackoffice',
+         'cmssmarteditwebservices',
+         'previewwebservices',
+         'cmsoccaddon',
+
+         'previewpersonalizationweb',
+         'personalizationcmsweb',
+         'personalizationsmartedit',
+         'personalizationpromotionssmartedit',
+         'personalizationsampledataaddon',
+         'personalizationpromotionssampledataaddon',
+         'personalizationpromotions',
+         'personalizationpromotionsweb',
+         'personalizationservicesbackoffice',
+         'personalizationpromotionsbackoffice',
+         'personalizationcmsbackoffice',
+         'personalizationsearchbackoffice',
+         'personalizationsearchsmartedit',
+         'personalizationsearchweb',
+         'personalizationsearchsamplesaddon',
+
+         'textfieldconfiguratortemplatebackoffice',
+         'textfieldconfiguratortemplateaddon',
+
+         'consignmenttrackingaddon',
+         'consignmenttrackingmock',
+         'consignmenttrackingbackoffice',
+
+         'marketplaceaddon',
+         'marketplaceoccaddon',
+         'marketplacebackofficesamplesaddon',
+         'marketplacebackoffice',
+         'marketplacestore',
+
+         'notificationaddon',
+         'customerinterestsaddon',
+         'stocknotificationaddon',
+
+         'pcmbackofficesamplesaddon',
+
+         'consignmenttrackingoccaddon',
+         'customerinterestsoccaddon',
+         'notificationoccaddon',
+
+         'outboundservices',
+         'odata2webservices',
+         'odata2webservicesfeaturetests',
+
+         'kymaintegrationbackoffice'
+    }
+
+    addons {
+        forStoreFronts('yacceleratorstorefront') {
+            names "commerceorgsamplesaddon,promotionenginesamplesaddon,marketplacepromotionenginesamplesaddon,smarteditaddon,textfieldconfiguratortemplateaddon,customerticketingaddon,orderselfserviceaddon,consignmenttrackingaddon,marketplaceaddon,marketplacebackofficesamplesaddon,notificationaddon,customerinterestsaddon,stocknotificationaddon,adaptivesearchsamplesaddon,personalizationsearchsamplesaddon,pcmbackofficesamplesaddon"
+            template "yacceleratorstorefront"
+        }
+
+        forStoreFronts('ycommercewebservices') {
+            names "acceleratorwebservicesaddon,marketplaceoccaddon,consignmenttrackingoccaddon,customerinterestsoccaddon,notificationoccaddon,cmsoccaddon"
+            template "ycommercewebservices"
+        }
+    }
+}
+
+task setup {
+    doLast {
+        pl.setup()
+    }
+}
+
+task buildSystem(dependsOn: setup) {
+    doLast {
+        pl.build()
+    }
+}
+
+task initialize(dependsOn: buildSystem) {
+    doLast {
+        pl.initialize()
+    }
+}
+
+
+task start {
+    doLast {
+        pl.start()
+    }
+}

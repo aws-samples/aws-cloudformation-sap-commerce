@@ -1,0 +1,198 @@
+apply plugin: 'installer-platform-plugin'
+apply plugin: 'installer-addon2-plugin'
+
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+
+    dependencies {
+    }
+}
+
+ext {
+    workDir = "./work"
+}
+
+def platform = platform {
+    localProperties {
+        property 'initialpassword.admin', 'nimda'
+        '# place your custom properties into this file instead of modifying the project.properties'
+        '# all properties in this file have higher priority and will overwrite the platform/project.properties settings.'
+
+        property '#mykey', '#myvalue'
+        property '#hac.webroot', '/hac'
+        
+        property 'googleApiKey', ''
+
+        property 'website.electronics.http', 'http://electronics.local:9001/yacceleratorstorefront'
+        property 'website.electronics.https', 'https://electronics.local:9002/yacceleratorstorefront'
+        property 'website.apparel-de.http', 'http://apparel-de.local:9001/yacceleratorstorefront'
+        property 'website.apparel-de.https', 'https://apparel-de.local:9002/yacceleratorstorefront'
+        property 'website.apparel-uk.http', 'http://apparel-uk.local:9001/yacceleratorstorefront'
+        property 'website.apparel-uk.https', 'https://apparel-uk.local:9002/yacceleratorstorefront'
+        property 'website.powertools.http', 'http://powertools.local:9001/yb2bacceleratorstorefront'
+        property 'website.powertools.https', 'https://powertools.local:9002/yb2bacceleratorstorefront'
+        property 'yb2bacceleratorstorefront.illegalrequirementstest.excluded', 'true'
+        property 'multicountrysampledataaddon.import.active', 'false'
+    }
+
+    afterSetup {
+        ensureAdminPasswordSet()
+    }    
+
+    extensions {
+        extensionNames 'ordermanagementaddon',
+        'orderselfserviceaddon',
+        'ordermanagementwebservices',
+        'b2bordermanagementwebservices',
+
+        'warehousing',
+        'warehousingbackoffice',
+        'warehousingwebservices',
+
+        'adaptivesearchsolr',
+        'adaptivesearchbackoffice',
+        'adaptivesearchsamplesaddon',
+        'b2bcommercebackoffice',
+        'commerceservicesbackoffice',
+        'solrfacetsearchbackoffice',
+
+        'yacceleratorbackoffice',
+        'yacceleratorinitialdata',
+        'yacceleratorordermanagement',
+        'yacceleratorstorefront',
+        'yb2bacceleratorstorefront',
+        'yaddon',
+        'ycommercewebservices',
+
+        'apparelstore',
+        'electronicsstore',
+        'powertoolsstore',
+        'solrserver',
+
+        'acceleratorwebservicesaddon',
+        'b2bacceleratoraddon',
+        'commerceorgaddon',
+        'commerceorgsamplesaddon',
+
+        'assistedservicestorefront',
+        'assistedservicewebservices',
+        'customerticketingaddon',
+        'customersupportbackoffice',
+        'ticketsystembackoffice',
+        'consignmenttrackingbackoffice',
+
+        'rulebuilderbackoffice',
+        'couponbackoffice',
+        'droolsruleengineservices',
+        'couponfacades',
+        'promotionenginesamplesaddon',
+        'consignmenttrackingaddon',
+
+        'pcmbackofficesamplesaddon',
+
+        'consignmenttrackingoccaddon',
+
+        'outboundservices',
+		'outboundsync',
+        'odata2webservices',
+        'odata2webservicesfeaturetests',
+		'integrationbackoffice',
+		'integrationmonitoringbackoffice',
+		'outboundsyncbackoffice',
+
+        'kymaintegrationbackoffice',
+        
+        'xyformsbackoffice',
+        'xyformsstorefrontcommons',
+        'xyformssamples',
+        'xyformsweb',
+        'orbeonweb',
+        
+        'entitlementfacades',
+        'entitlementbackoffice',
+
+        'cmswebservices',
+        'smarteditwebservices',
+        'cmssmarteditwebservices',
+        'permissionswebservices',
+        'previewwebservices',
+        'smarteditaddon',
+        'cmssmartedit',
+        'cmsbackoffice',
+        'cmsoccaddon',
+        'multicountrysampledataaddon'
+    }
+
+    addons {
+        forStoreFronts('yacceleratorstorefront,yb2bacceleratorstorefront') {
+            names 'commerceorgsamplesaddon', 'customerticketingaddon', 'promotionenginesamplesaddon', 'adaptivesearchsamplesaddon',
+                    'pcmbackofficesamplesaddon', 'ordermanagementaddon', 'orderselfserviceaddon', 'consignmenttrackingaddon', 'assistedservicestorefront',
+                    'xyformssamples', 'xyformsstorefrontcommons', 'smarteditaddon', 'multicountrysampledataaddon'
+            template 'yacceleratorstorefront'
+        }
+
+        forStoreFronts('yb2bacceleratorstorefront') {
+            names 'b2bacceleratoraddon', 'commerceorgaddon'
+            template 'yacceleratorstorefront'
+        }
+
+        forStoreFronts('ycommercewebservices') {
+            names 'acceleratorwebservicesaddon', 'consignmenttrackingoccaddon', 'cmsoccaddon'
+            template 'ycommercewebservices'
+        }
+    }
+}
+
+task createStoreFrontExt {
+    doLast {
+        def prePlatform = platformFactory.createPlatform()
+        prePlatform.createConfigDirIfNotExist()
+        prePlatform.resetConfig()
+
+        prePlatform.createExtension {
+            templateName 'yacceleratorstorefront'
+            extensionName 'yb2bacceleratorstorefront'
+            packageName 'de.hybris.platform.yb2bacceleratorstorefront'
+        }
+    }
+}
+
+task setup(dependsOn: createStoreFrontExt) {
+    doLast {
+        platform.setup()
+    }
+}
+
+task buildSystem(dependsOn: setup) {
+    doLast {
+        platform.build()
+    }
+}
+
+task initialize(dependsOn: buildSystem) {
+    doLast {
+        platform.initialize()
+    }
+}
+
+task start {
+    doLast {
+        platform.start()
+    }
+}
+
+task startInBackground {
+    doLast {
+        pl.startInBackground()
+    }
+}
+
+task stopInBackground {
+    doLast {
+        pl.stopInBackground()
+    }
+}
+

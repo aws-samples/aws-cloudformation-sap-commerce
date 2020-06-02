@@ -1,0 +1,2 @@
+* New addonified Marketplace Accelerator
+* For Kyma integration + ApiRegistry, optionally, ccv2.services.api.url.0 property should be set to a server url reachable by kyma instead of https://localhost:9002.

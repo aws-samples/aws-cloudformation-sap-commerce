@@ -1,0 +1,1 @@
+Ext-gen B2B Accelerator, based on yacceleratorstorefront, with b2bacceleratoraddon, commerceorgaddon, customerticketing and promotions engine.

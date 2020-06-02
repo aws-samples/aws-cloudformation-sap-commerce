@@ -1,0 +1,128 @@
+apply plugin: 'installer-platform-plugin'
+apply plugin: 'installer-addon2-plugin'
+
+def platform = platform() {
+    localProperties {
+        property 'initialpassword.admin', 'nimda'
+		property 'googleApiKey', ''
+    }
+
+    afterSetup {
+        ensureAdminPasswordSet()
+    }	
+
+    extensions {
+        extensionNames 'adaptivesearchsolr',
+		'adaptivesearchbackoffice',
+		'adaptivesearchsamplesaddon',
+		'adaptivesearchwebservices',
+		'commerceservicesbackoffice',
+        'solrfacetsearchbackoffice',
+		'solrserver',
+		'yacceleratorbackoffice',
+		'yacceleratorinitialdata',
+		'yacceleratorfulfilmentprocess',
+		'yacceleratorstorefront',
+		'ycommercewebservices',
+		'ycommercewebservicestest',
+
+		'electronicsstore',
+		'apparelstore',
+
+		'acceleratorwebservicesaddon',
+		'orderselfserviceaddon',
+
+        'customersupportbackoffice',
+		'customerticketingaddon',
+		'commerceorgsamplesaddon',
+
+		'rulebuilderbackoffice',
+		'couponbackoffice',
+		'droolsruleengineservices',
+		'couponfacades',
+		'couponservices',
+        'promotionenginesamplesaddon',
+
+		'cmswebservices',
+		'smarteditwebservices',
+		'cmssmarteditwebservices',
+		'permissionswebservices',
+		'smarteditaddon',
+		'cmssmartedit',
+		'cmsoccaddon',
+        'cmsbackoffice',
+
+		'previewpersonalizationweb',
+		'personalizationcmsweb',
+		'personalizationsmartedit',
+		'personalizationpromotionssmartedit',
+		'personalizationsampledataaddon',
+		'personalizationpromotionssampledataaddon',
+		'personalizationpromotions',
+		'personalizationpromotionsweb',
+		'personalizationservicesbackoffice',
+		'personalizationpromotionsbackoffice',
+        'personalizationcmsbackoffice',
+		'personalizationsearchbackoffice',
+		'personalizationsearchsmartedit',
+		'personalizationsearchweb',
+		'personalizationsearchsamplesaddon',
+
+        'textfieldconfiguratortemplatebackoffice',
+		'textfieldconfiguratortemplateaddon',
+		'assistedservicestorefront',
+		'assistedservicepromotionaddon',
+
+		'pcmbackofficesamplesaddon',
+
+		'cisavs',
+		'cisclient',
+		'cisclienttest',
+		'cispayment',
+		'cistax',
+
+		'outboundservices',
+		'odata2webservices',
+		'odata2webservicesfeaturetests',
+
+        'kymaintegrationbackoffice'
+    }
+
+	addons {
+		forStoreFronts('yacceleratorstorefront') {
+			names 'commerceorgsamplesaddon', 'promotionenginesamplesaddon', 'smarteditaddon', 'textfieldconfiguratortemplateaddon', 'assistedservicestorefront', 
+					'assistedservicepromotionaddon', 'customerticketingaddon', 'orderselfserviceaddon', 'adaptivesearchsamplesaddon', 'pcmbackofficesamplesaddon', 
+					'personalizationsearchsamplesaddon'
+			template 'yacceleratorstorefront'
+		}
+
+		forStoreFronts('ycommercewebservices') {
+			names 'acceleratorwebservicesaddon', 'cmsoccaddon'
+			template 'ycommercewebservices'
+		}
+	}
+}
+
+task setup {
+    doLast {
+        platform.setup()
+    }
+}
+
+task buildSystem(dependsOn: setup) {
+    doLast {
+        platform.build()
+    }
+}
+
+task initialize(dependsOn: buildSystem) {
+    doLast {
+        platform.initialize()
+    }
+}
+
+task start {
+    doLast {
+        platform.start()
+    }
+}

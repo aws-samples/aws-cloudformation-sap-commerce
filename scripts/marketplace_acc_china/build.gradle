@@ -1,0 +1,169 @@
+apply plugin: 'installer-platform-plugin'
+apply plugin: 'installer-addon2-plugin'
+
+def pl = platform {
+    localProperties {
+        property 'initialpassword.admin', 'nimda'
+        property 'commerceservices.default.desktop.ui.experience', 'responsive'
+        property 'csrf.allowed.url.patterns', '/[^/]+(/[^?]*)+(sop/response)$,/[^/]+(/[^?]*)+(merchant_callback)$,/[^/]+(/[^?]*)+(hop/response)$,/[^/]+(/[^?]*)+(language)$,/[^/]+(/[^?]*)+(currency)$,/[^/]+(/[^?]*)+(alipay)+/(.)*$,/[^/]+(/[^?]*)+(wechat)+/(.)*$'
+        property 'task.polling.interval.min', '0'
+    }
+
+    afterSetup {
+        ensureAdminPasswordSet()
+    }
+    
+    extensions {
+        extensionNames 'adaptivesearchsolr',
+         'adaptivesearchbackoffice',
+         'adaptivesearchwebservices',
+         'adaptivesearchsamplesaddon',
+         'commerceservicesbackoffice',
+         'solrfacetsearchbackoffice',
+         'solrserver',
+         'yacceleratorbackoffice',
+         'yacceleratorinitialdata',
+         'yacceleratorfulfilmentprocess',
+         'yacceleratorstorefront',
+         'yacceleratormarketplaceintegration',
+         'ycommercewebservices',
+         'ycommercewebservicestest',
+
+         'acceleratorwebservicesaddon',
+         'orderselfserviceaddon',
+
+         'customersupportbackoffice',
+         'customerticketingaddon',
+         'commerceorgsamplesaddon',
+
+         'rulebuilderbackoffice',
+         'couponbackoffice',
+         'droolsruleengineservices',
+         'couponfacades',
+         'couponservices',
+         'promotionenginesamplesaddon',
+         'marketplacepromotionenginesamplesaddon',
+
+         'cmswebservices',
+         'smarteditwebservices',
+         'permissionswebservices',
+         'smarteditaddon',
+         'cmssmartedit',
+         'cmsbackoffice',
+         'cmssmarteditwebservices',
+         'previewwebservices',
+         'cmsoccaddon',
+
+         'previewpersonalizationweb',
+         'personalizationcmsweb',
+         'personalizationsmartedit',
+         'personalizationpromotionssmartedit',
+         'personalizationsampledataaddon',
+         'personalizationpromotionssampledataaddon',
+         'personalizationpromotions',
+         'personalizationpromotionsweb',
+         'personalizationservicesbackoffice',
+         'personalizationpromotionsbackoffice',
+         'personalizationsearchbackoffice',
+         'personalizationsearchsmartedit',
+         'personalizationsearchweb',
+         'personalizationsearchsamplesaddon',
+
+         'textfieldconfiguratortemplatebackoffice',
+         'textfieldconfiguratortemplateaddon',
+
+         'consignmenttrackingaddon',
+         'consignmenttrackingmock',
+         'consignmenttrackingbackoffice',
+
+         'marketplaceaddon',
+         'marketplaceoccaddon',
+         'marketplacebackofficesamplesaddon',
+         'marketplacebackoffice',
+         'marketplacestore',
+
+         'chineseprofileaddon',
+         'chineseprofileoccaddon',
+         'chineselogisticaddon',
+         'chineselogisticbackoffice',
+         'chineselogisticoccaddon',
+
+         'chinesepaymentaddon',
+         'chinesepaymentoccaddon',
+         'chinesepaymentmock',
+         'chinesetaxinvoiceaddon',
+         'chinesetaxinvoicebackoffice',
+         'chinesetaxinvoiceoccaddon',
+         'chinesepspalipaysamplesaddon',
+         'chinesepspalipaysbackoffice',
+         'chinesestoreaddon',
+         'verticalnavigationaddon',
+
+         'chineseaddressaddon',
+         'chineseaddressoccaddon',
+         'chineseaddressbackoffice',
+
+         'chinesepspwechatpaymentaddon',
+         'chinesepspwechatpaysamplesaddon',
+         'chinesepspwechatpaysbackoffice',
+
+         'notificationaddon',
+         'customerinterestsaddon',
+         'stocknotificationaddon',
+         'chineseproductsharingaddon',
+
+         'backofficesolrsearch',
+         'pcmbackofficesamplesaddon',
+
+         'consignmenttrackingoccaddon',
+         'customerinterestsoccaddon',
+         'notificationoccaddon',
+
+         'personalizationcmsbackoffice',
+
+        /* integration-apis */
+         'outboundservices',
+         'odata2webservices',
+         'odata2webservicesfeaturetests',
+
+         'kymaintegrationbackoffice'
+    }
+
+    addons {
+         forStoreFronts('yacceleratorstorefront') {
+            names "commerceorgsamplesaddon,promotionenginesamplesaddon,marketplacepromotionenginesamplesaddon,smarteditaddon,textfieldconfiguratortemplateaddon,customerticketingaddon,orderselfserviceaddon,consignmenttrackingaddon,marketplaceaddon,marketplacebackofficesamplesaddon,chineseprofileaddon,chineselogisticaddon,chinesepaymentaddon,chinesetaxinvoiceaddon,chinesepspalipaysamplesaddon,chinesestoreaddon,verticalnavigationaddon,chineseaddressaddon,chinesepspwechatpaymentaddon,chinesepspwechatpaysamplesaddon,consignmenttrackingaddon,notificationaddon,customerinterestsaddon,stocknotificationaddon,chineseproductsharingaddon,adaptivesearchsamplesaddon,personalizationsearchsamplesaddon,pcmbackofficesamplesaddon"
+            template "yacceleratorstorefront"
+         }
+
+         forStoreFronts('ycommercewebservices') {
+            names "acceleratorwebservicesaddon,marketplaceoccaddon,consignmenttrackingoccaddon,customerinterestsoccaddon,notificationoccaddon,cmsoccaddon,chineseaddressoccaddon,chineselogisticoccaddon,chinesetaxinvoiceoccaddon,chineseprofileoccaddon,chinesepaymentoccaddon"
+            template "ycommercewebservices"
+         }
+    }
+
+}
+
+task setup {
+    doLast {       
+        pl.setup()
+    }
+}
+
+task buildSystem(dependsOn: setup) {
+    doLast {
+        pl.build()
+    }
+}
+
+task initialize(dependsOn: buildSystem) {
+    doLast {
+        pl.initialize()
+    }
+}
+
+
+task start {
+    doLast {
+        pl.start()
+    }
+}

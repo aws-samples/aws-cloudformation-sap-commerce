@@ -1,0 +1,212 @@
+apply plugin: 'installer-platform-plugin'
+apply plugin: 'installer-addon2-plugin'
+apply plugin: 'installer-datahub-plugin'
+
+def CATALINA_OPTS = "-Xms4096m -Xmx4096m"
+
+def c4cDir = platformHome + "/../ext-integration/datahub/extensions/c4c-integration"
+def y2ysyncDir = platformHome + "/../ext-integration/datahub/extensions/y2ysync-datahub-ext"
+def datahubWebAppHome = platformHome + "/../ext-integration/datahub/web-app"
+def dependenciesDir = platformHome + "/../ext-integration/datahub/extensions/dependencies"
+def sapDir = platformHome + "/../ext-integration/datahub/extensions/sap"
+
+def pl = platform {
+
+    localProperties {
+        property 'initialpassword.admin', 'nimda'
+        /* legacy promotions has to be enabled explicitly */
+        property 'promotions.legacy.mode', 'true'
+    }
+
+    afterSetup {
+        ensureAdminPasswordSet()
+    }    
+
+    extensions {
+
+        extensions {
+            extName 'backoffice'
+            extName 'adaptivesearchsolr'
+            extName 'adaptivesearchbackoffice'
+            extName 'commerceservicesbackoffice'
+            extName 'solrfacetsearchbackoffice'
+            extName 'solrserver'
+            extName 'yacceleratorbackoffice'
+            extName 'yacceleratorinitialdata'
+            extName 'yacceleratorfulfilmentprocess'
+            extName 'yacceleratorstorefront'
+            extName 'yaddon'
+            extName 'ycommercewebservices'
+            extName 'cmsoccaddon'
+
+            extName 'electronicsstore'
+            extName 'apparelstore'
+
+            extName 'acceleratorwebservicesaddon'
+
+            extName 'customerticketingaddon'
+            extName 'customerticketingc4cintegration'
+
+            extName 'assistedservicestorefront'
+
+            extName 'c4ccustomer'
+            extName 'y2ysyncbackoffice'
+
+            /* integration-apis */
+            extName 'outboundservices'
+            extName 'odata2webservices'
+            extName 'odata2webservicesfeaturetests'
+
+            extName 'kymaintegrationbackoffice'
+        }
+
+        
+        addons {
+            forStoreFronts('yacceleratorstorefront') {
+                names 'assistedservicestorefront', 'customerticketingaddon'
+                template 'yacceleratorstorefront'
+            }
+            
+            forStoreFronts('ycommercewebservices') {
+                names 'acceleratorwebservicesaddon', 'cmsoccaddon'
+                template 'ycommercewebservices'
+            }
+        }
+    }
+}
+
+def datahubServerId = 'datahub-tomcat'
+
+def datahubCfg = {
+     resources {
+        propertyFile 'local', {
+            property 'datahub.c4c.exportURL', 'https://localhost:9002/datahubadapter'
+            property 'datahub.server.url', 'https://localhost:9793/datahub-webapp/v1'
+            property 'datahub.publication.saveImpex', 'true'
+            property 'datahub.c4c.userName', 'dummyUser'
+            property 'datahub.c4c.password', 'dummyPassword'
+            property 'datahub.c4c.senderParty.schemeID.C4CCUSTOMER_POOL', 'senderSchemeID'
+            property 'datahub.c4c.senderParty.internalID.C4CCUSTOMER_POOL', 'senderInternalId'
+            property 'datahub.c4c.senderParty.schemeAgencyID.C4CCUSTOMER_POOL', '000'
+            property 'datahub.c4c.recipientParty.schemeID.C4CCUSTOMER_POOL', 'recipientSchemeID'
+            property 'datahub.c4c.recipientParty.internalID.C4CCUSTOMER_POOL', 'recipientInternalID'
+            property 'datahub.c4c.recipientParty.schemeAgencyID.C4CCUSTOMER_POOL', '111'
+            property 'c4c.payload.filename', 'payload.xml'
+            property 'datahub.autoInitMode', 'create-drop'
+            property 'datahub.encryption.key.path', '/encryption-key.txt'
+            property 'c4c.soap.request.size.threshold', '1000'
+            property 'c4c.soap.request.pause.between.requests', '5000'
+
+            property 'datahub.security.basic.admin.user', 'admin'
+            property 'datahub.security.basic.admin.password', passwd()
+            property 'datahub.security.basic.read_only.user', 'datahub'
+            property 'datahub.security.basic.read_only.password', 'datahub'
+
+            property 'datahubadapter.datahuboutbound.user', 'admin'
+            property 'datahubadapter.datahuboutbound.password', passwd()
+            /* legacy promotions has to be enabled explicitly */
+            property 'promotions.legacy.mode', 'true'
+        }
+    }
+    extensionDir sapDir
+    extensionDir c4cDir
+    extensionDir y2ysyncDir
+    extensions(
+            'party-canonical',
+            'c4c-integration-canonical',
+            'c4c-integration-raw',
+            'c4c-integration-target',
+            'c4c-integration-soap-schema',
+            'c4c-integration-soap-adapter',
+            'y2ysync-datahub-ext'
+    )
+
+    webappDir datahubWebAppHome
+
+    ports {
+        http 8080
+        ssl 9793
+    }
+
+}
+
+task setupPlatform {
+    doLast {
+        pl.setup()
+    }
+}
+
+task setupDataHub {
+    doLast {
+        copy {
+            from dependenciesDir
+            into "${installerHome}/recipes/b2c_c4c/build/datahub-webapp/WEB-INF/lib"
+        }
+        copy {
+            from "${installerHome}/recipes/b2c_c4c/configs/encryption-key.txt"
+            into "${installerHome}/recipes/b2c_c4c/build/datahub-webapp/WEB-INF/classes"
+        }
+        datahub(datahubServerId).setup datahubCfg
+    }
+}
+
+task validateDataHub {
+    doLast {
+        if (!file(c4cDir).exists()) {
+            throw new InvalidUserDataException("Please download c4c-integration module from Extension Marketplace and unpack it to ${c4cDir}")
+        } else if (!file(sapDir).exists()) {
+            throw new InvalidUserDataException("Please download ERP module from Extension Marketplace and unpack it to ${sapDir}")
+        } else if (!file(y2ysyncDir).exists()) {
+            throw new InvalidUserDataException("Please download platform module from Extension Marketplace and unpack it to ${y2ysyncDir}")
+        } else if (!file(datahubWebAppHome).exists()) {
+            throw new InvalidUserDataException("Please download hybris-datahub-sdk-dist module from Extension Marketplace and unpack it to ${datahubWebAppHome}")
+        } else if (!file(dependenciesDir).exists()) {
+            throw new InvalidUserDataException("Please download dependencies module from Extension Marketplace and unpack it to ${dependenciesDir}")
+        }
+    }
+}
+
+setupDataHub.mustRunAfter validateDataHub
+setupPlatform.mustRunAfter validateDataHub
+
+task setup(dependsOn: [validateDataHub, setupPlatform, setupDataHub])
+
+task startDataHub {
+    doLast {
+        datahub(datahubServerId).start CATALINA_OPTS
+    }
+}
+
+task stopDataHub {
+    doLast {
+        datahub(datahubServerId).stop()
+    }
+}
+
+task buildSystem(dependsOn: setup) {
+    doLast {
+        pl.build()
+    }
+}
+
+task initialize(dependsOn: buildSystem) {
+    doLast {
+        pl.initialize()
+    }
+}
+
+task startPlatform {
+    doLast {
+        pl.startInBackground()
+    }
+}
+
+task start(dependsOn: [startDataHub, startPlatform])
+
+task stopPlatform {
+    doLast {
+        pl.stopInBackground()
+    }
+}
+
+task stop(dependsOn: [stopDataHub, stopPlatform])

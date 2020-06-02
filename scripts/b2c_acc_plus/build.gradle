@@ -1,0 +1,186 @@
+apply plugin: 'installer-platform-plugin'
+apply plugin: 'installer-addon2-plugin'
+
+def pl = platform {
+    localProperties {
+        property 'initialpassword.admin', 'nimda'
+	    property 'recaptcha.publickey', ''
+        property 'recaptcha.privatekey', ''
+        property 'googleApiKey', ''
+        property 'csrf.allowed.url.patterns', '/[^/]+(/[^?]*)+(sop/response)$,/[^/]+(/[^?]*)+(merchant_callback)$,/[^/]+(/[^?]*)+(hop/response)$,/[^/]+(/[^?]*)+(language)$,/[^/]+(/[^?]*)+(currency)$,/(events)$'
+
+    }
+
+    afterSetup {
+        ensureAdminPasswordSet()
+    }    
+
+    extensions {
+        extName 'adaptivesearchsolr'
+        extName 'adaptivesearchbackoffice'
+        extName 'adaptivesearchsamplesaddon'
+        extName 'adaptivesearchwebservices'
+        extName 'commerceservicesbackoffice'
+        extName 'solrfacetsearchbackoffice'
+        extName 'solrserver'
+
+        extName 'yacceleratorbackoffice'
+        extName 'yacceleratorinitialdata'
+        extName 'yacceleratorfulfilmentprocess'
+        extName 'yacceleratorstorefront'
+        extName 'ycommercewebservices'
+        extName 'ycommercewebservicestest'
+
+        extName 'electronicsstore'
+        extName 'apparelstore'
+
+        extName 'captchaaddon'
+        extName 'acceleratorwebservicesaddon'
+        extName 'commerceorgsamplesaddon'
+        extName 'orderselfserviceaddon'
+
+        extName 'rulebuilderbackoffice'
+        extName 'couponbackoffice'
+        extName 'droolsruleengineservices'
+        extName 'couponfacades'
+        extName 'couponservices'
+        extName 'promotionenginesamplesaddon'
+
+        extName 'assistedservicestorefront'
+        extName 'assistedservicewebservices'
+        extName 'assistedserviceyprofileaddon'
+        extName 'assistedservicecustomerinterestsaddon'
+        extName 'assistedservicepromotionaddon'
+
+        extName 'customerticketingaddon'
+        extName 'customersupportbackoffice'
+
+        extName 'profiletagaddon'
+        extName 'profileservices'
+
+        extName 'textfieldconfiguratortemplatebackoffice'
+        extName 'textfieldconfiguratortemplateaddon'
+
+        extName 'cmswebservices'
+        extName 'smarteditwebservices'
+        extName 'cmssmarteditwebservices'
+        extName 'permissionswebservices'
+        extName 'smarteditaddon'
+        extName 'cmssmartedit'
+        extName 'cmsbackoffice'
+        extName 'cmsoccaddon'
+
+        extName 'consignmenttrackingaddon'
+        extName 'consignmenttrackingmock'
+        extName 'consignmenttrackingbackoffice'
+
+        extName 'notificationaddon'
+        extName 'customerinterestsaddon'
+        extName 'stocknotificationaddon'
+        extName 'configurablebundleaddon'
+
+        extName 'previewpersonalizationweb'
+        extName 'personalizationcmsweb'
+        extName 'personalizationsmartedit'
+        extName 'personalizationpromotionssmartedit'
+        extName 'personalizationsampledataaddon'
+        extName 'personalizationpromotionssampledataaddon'
+        extName 'personalizationyprofile'
+        extName 'personalizationpromotions'
+        extName 'personalizationpromotionsweb'
+        extName 'personalizationservicesbackoffice'
+        extName 'personalizationpromotionsbackoffice'
+        extName 'personalizationcmsbackoffice'
+        extName 'personalizationintegrationbackoffice'
+        extName 'personalizationsearchbackoffice'
+        extName 'personalizationsearchsmartedit'
+        extName 'personalizationsearchweb'
+        extName 'personalizationsearchsamplesaddon'
+        extName 'personalizationyprofilesampledataaddon'
+        extName 'personalizationaddon'
+
+
+        extName 'pcmbackofficesamplesaddon'
+
+
+        extName 'xyformsbackoffice'
+        extName 'xyformsstorefrontcommons'
+        extName 'xyformssamples'
+        extName 'xyformsweb'
+        extName 'platformbackoffice'
+        extName 'orbeonweb'
+        extName 'consignmenttrackingoccaddon'
+        extName 'customerinterestsoccaddon'
+        extName 'notificationoccaddon'
+
+        extName 'kymaintegrationbackoffice'
+
+        /* integration-apis */
+        extName 'outboundservices'
+        extName 'outboundsync'
+        extName 'odata2webservices'
+        extName 'odata2webservicesfeaturetests'
+        extName 'integrationbackoffice'
+        extName 'integrationmonitoringbackoffice'
+        extName 'outboundsyncbackoffice'
+
+        extName 'merchandisingaddon'
+        extName 'merchandisingcmswebservices'
+        extName 'merchandisingsmartedit'
+        extName 'merchandisingservices'
+        extName 'merchandisingservicesbackoffice'
+        extName 'merchandisingstorefrontsampledataaddon'
+    }
+
+    addons {
+        forStoreFronts('yacceleratorstorefront') {
+            names('captchaaddon', 'commerceorgsamplesaddon', 'promotionenginesamplesaddon', 'assistedservicestorefront', 'assistedservicecustomerinterestsaddon',
+                    'assistedserviceyprofileaddon', 'assistedservicepromotionaddon', 'customerticketingaddon', 'textfieldconfiguratortemplateaddon', 'smarteditaddon',
+                    'consignmenttrackingaddon', 'notificationaddon', 'customerinterestsaddon', 'stocknotificationaddon', 'orderselfserviceaddon', 'adaptivesearchsamplesaddon',
+                    'configurablebundleaddon', 'pcmbackofficesamplesaddon', 'xyformssamples', 'xyformsstorefrontcommons', 'personalizationsearchsamplesaddon',
+                    'personalizationyprofilesampledataaddon', 'personalizationaddon', 'profiletagaddon', 'merchandisingaddon', 'merchandisingstorefrontsampledataaddon')
+            template 'yacceleratorstorefront'
+        }
+
+        forStoreFronts('ycommercewebservices') {
+            names 'acceleratorwebservicesaddon', 'consignmenttrackingoccaddon', 'customerinterestsoccaddon', 'notificationoccaddon', 'cmsoccaddon'
+            template 'ycommercewebservices'
+        }
+    }
+}
+
+task setup {
+    doLast {
+        pl.setup()
+    }
+}
+
+task buildSystem(dependsOn: setup) {
+    doLast {
+        pl.build()
+    }
+}
+
+task initialize(dependsOn: buildSystem) {
+    doLast {
+        pl.initialize()
+    }
+}
+
+task start {
+    doLast {
+        pl.start()
+    }
+}
+
+task startInBackground {
+    doLast {
+        pl.startInBackground()
+    }
+}
+
+task stopInBackground {
+    doLast {
+        pl.stopInBackground()
+    }
+}

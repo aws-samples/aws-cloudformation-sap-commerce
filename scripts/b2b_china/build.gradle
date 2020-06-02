@@ -1,0 +1,160 @@
+apply plugin: 'installer-platform-plugin'
+apply plugin: 'installer-addon2-plugin'
+
+def pl = platform {
+    localProperties {
+        property 'initialpassword.admin', 'nimda'
+        property 'baiduApiKey', ''
+        property 'website.powertools.http', 'http://powertools.local:9001/yb2bacceleratorstorefront'
+        property 'website.powertools.https', 'https://powertools.local:9002/yb2bacceleratorstorefront'
+        property 'yb2bacceleratorstorefront.illegalrequirementstest.excluded', 'true'
+    }
+
+    afterSetup {
+        ensureAdminPasswordSet()
+    }    
+
+    extensions {
+        extensionNames 'adaptivesearchsolr',
+                'adaptivesearchbackoffice',
+                'adaptivesearchwebservices',
+                'adaptivesearchsamplesaddon',
+                'b2bcommercebackoffice',
+                'solrfacetsearchbackoffice',
+
+                'yacceleratorbackoffice',
+                'yacceleratorinitialdata',
+                'yacceleratorfulfilmentprocess',
+                'ycommercewebservices',
+                'ycommercewebservicestest',
+                'orderselfserviceaddon',
+
+                'powertoolsstore',
+                'solrserver',
+
+                'acceleratorwebservicesaddon',
+                'chineseaddressaddon',
+                'chineseaddressoccaddon',
+                'chinesecommerceorgaddressaddon',
+                'chineseaddressbackoffice',
+                'b2bacceleratoraddon',
+                'commerceorgaddon',
+                'commerceorgsamplesaddon',
+
+                'customersupportbackoffice',
+                'customerticketingaddon',
+
+         'rulebuilderbackoffice',
+         'couponbackoffice',
+         'droolsruleengineservices',
+         'couponfacades',
+         'couponservices',
+         'promotionenginesamplesaddon',
+
+                'textfieldconfiguratortemplatebackoffice',
+                'textfieldconfiguratortemplateaddon',
+
+                'cmswebservices',
+                'smarteditwebservices',
+                'cmssmarteditwebservices',
+                'permissionswebservices',
+                'smarteditaddon',
+                'cmssmartedit',
+                'cmsbackoffice',
+                'assistedservicestorefront',
+                'assistedservicewebservices',
+                'cmsoccaddon',
+
+                'previewpersonalizationweb',
+                'personalizationcmsweb',
+                'personalizationsmartedit',
+                'personalizationpromotionssmartedit',
+                'personalizationsampledataaddon',
+                'personalizationpromotionssampledataaddon',
+                'personalizationpromotions',
+                'personalizationpromotionsweb',
+                'personalizationservicesbackoffice',
+                'personalizationpromotionsbackoffice',
+                'personalizationcmsbackoffice',
+                'personalizationsearchbackoffice',
+                'personalizationsearchsmartedit',
+                'personalizationsearchweb',
+                'personalizationsearchsamplesaddon',
+
+         'chinesestoreaddon',
+
+                'consignmenttrackingaddon',
+                'consignmenttrackingmock',
+                'consignmenttrackingbackoffice',
+                'consignmenttrackingoccaddon',
+
+                'pcmbackofficesamplesaddon',
+
+                'outboundservices',
+                'odata2webservices',
+                'odata2webservicesfeaturetests',
+
+                'kymaintegrationbackoffice',
+
+                'yb2bacceleratorstorefront'
+
+    }
+
+    addons {
+        forStoreFronts('yb2bacceleratorstorefront') {
+            names('chineseaddressaddon', 'chinesecommerceorgaddressaddon', 'b2bacceleratoraddon', 'commerceorgaddon', 'chinesestoreaddon',
+                    'commerceorgsamplesaddon', 'promotionenginesamplesaddon', 'textfieldconfiguratortemplateaddon', 'smarteditaddon',
+                    'assistedservicestorefront', 'customerticketingaddon', 'orderselfserviceaddon', 'consignmenttrackingaddon',
+                    'adaptivesearchsamplesaddon', 'personalizationsearchsamplesaddon', 'pcmbackofficesamplesaddon')
+            template 'yacceleratorstorefront'
+        }
+        forStoreFronts('ycommercewebservices') {
+            names 'acceleratorwebservicesaddon', 'consignmenttrackingoccaddon', 'cmsoccaddon' ,'chineseaddressoccaddon'
+            template 'ycommercewebservices'
+        }
+    }
+
+}
+
+task createStoreFrontExt {
+    doLast {
+        def prePlatform = platformFactory.createPlatform()
+        prePlatform.createConfigDirIfNotExist()
+        prePlatform.resetConfig()
+
+        def yb2bDir = new File("${suiteHome}/hybris/bin/custom/yb2bacceleratorstorefront")
+        if (yb2bDir.exists()) {
+            yb2bDir.deleteDir()
+        }
+
+        prePlatform.createExtension {
+            templateName 'yacceleratorstorefront'
+            extensionName 'yb2bacceleratorstorefront'
+            packageName 'de.hybris.platform.yb2bacceleratorstorefront'
+        }
+    }
+}
+
+task setup(dependsOn: createStoreFrontExt) {
+    doLast {
+        pl.setup()
+    }
+}
+
+task buildSystem(dependsOn: setup) {
+    doLast {
+        pl.build()
+    }
+}
+
+task initialize(dependsOn: buildSystem) {
+    doLast {
+        pl.initialize()
+    }
+}
+
+task start {
+    doLast {
+        pl.start()
+    }
+}

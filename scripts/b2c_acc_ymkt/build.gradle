@@ -1,0 +1,168 @@
+apply plugin: 'installer-platform-plugin'
+apply plugin: 'installer-addon2-plugin'
+
+def config = {
+
+	localProperties {
+		property 'initialpassword.admin', 'nimda'
+	    property 'googleApiKey', ''
+		property 'multicountrysampledataaddon.import.active', 'false'
+	    property 'csrf.allowed.url.patterns', '/[^/]+(/[^?]*)+(sop/response)$,/[^/]+(/[^?]*)+(merchant_callback)$,/[^/]+(/[^?]*)+(hop/response)$,/[^/]+(/[^?]*)+(language)$,/[^/]+(/[^?]*)+(currency)$,/(events)$'
+
+		property 'piwik.tracker.url.electronics', '/yacceleratorstorefront/events'
+		property 'piwik.tracker.https.url.electronics', '/yacceleratorstorefront/events'
+		property 'piwik.tracker.url.apparel-uk', '/yacceleratorstorefront/events'
+		property 'piwik.tracker.https.url.apparel-uk', '/yacceleratorstorefront/events'
+		property 'piwik.tracker.url.apparel-de', '/yacceleratorstorefront/events'
+		property 'piwik.tracker.https.url.apparel-de', '/yacceleratorstorefront/events'
+
+	    property 'sapymktcommon.odata.url.root', 'https://my300000.s4hana.ondemand.com'
+		property 'sapymktcommon.odata.url.sap-client', ''
+	    property 'sapymktcommon.odata.url.user', 'username'
+	    property 'sapymktcommon.odata.url.password', 'password'
+
+	    property 'sapymktcommon.product.imagePrefix', 'https://localhost:9002'
+	    property 'sapymktcommon.product.navPrefix', 'https://localhost:9002/yacceleratorstorefront/p/'
+	    property 'sapymktcommon.product.navSuffix', '?site=electronics'
+
+	    property 'sapymktclickstream.listener.events.batchSize', '1'
+
+	    property 'sapymktsegmentation.campaign_category_id', ''
+	}
+
+    afterSetup {
+        ensureAdminPasswordSet()
+    }	
+
+    extensions {
+	    extName 'adaptivesearchsolr'
+      	extName 'adaptivesearchbackoffice'
+      	extName 'adaptivesearchsamplesaddon'
+		extName 'adaptivesearchwebservices'
+      	extName 'commerceservicesbackoffice'
+	    extName 'solrfacetsearchbackoffice'
+	    extName 'solrserver'
+	    extName 'yacceleratorbackoffice'
+	    extName 'yacceleratorinitialdata'
+	    extName 'yacceleratorfulfilmentprocess'
+	    extName 'yacceleratorstorefront'
+	    extName 'ycommercewebservices'
+	    extName 'ycommercewebservicestest'
+
+	    extName 'electronicsstore'
+	    extName 'apparelstore'
+
+	    extName 'acceleratorwebservicesaddon'
+	    extName 'orderselfserviceaddon'
+
+	    extName 'customersupportbackoffice'
+	    extName 'customerticketingaddon'
+	    extName 'commerceorgsamplesaddon'
+
+	    extName 'rulebuilderbackoffice'
+	    extName 'couponbackoffice'
+	    extName 'droolsruleengineservices'
+	    extName 'couponfacades'
+	    extName 'couponservices'
+	    extName 'promotionenginesamplesaddon'
+
+	    extName 'cmswebservices'
+	    extName 'smarteditwebservices'
+	    extName 'cmssmarteditwebservices'
+	    extName 'permissionswebservices'
+	    extName 'smarteditaddon'
+	    extName 'cmssmartedit'
+	    extName 'cmsbackoffice'
+        extName 'multicountrysampledataaddon'
+		extName 'cmsoccaddon'
+
+	    extName 'previewpersonalizationweb'
+	    extName 'personalizationcmsweb'
+	    extName 'personalizationsmartedit'
+        extName 'personalizationpromotionssmartedit'
+	    extName 'personalizationsampledataaddon'
+	    extName 'personalizationpromotionssampledataaddon'
+	    extName 'personalizationpromotions'
+	    extName 'personalizationpromotionsweb'
+	    extName 'personalizationservicesbackoffice'
+	    extName 'personalizationpromotionsbackoffice'
+	    extName 'personalizationcmsbackoffice'
+	    extName 'personalizationsearchbackoffice'
+	    extName 'personalizationsearchsmartedit'
+	    extName 'personalizationsearchweb'
+	    extName 'personalizationsearchsamplesaddon'
+
+	    extName 'textfieldconfiguratortemplatebackoffice'
+	    extName 'textfieldconfiguratortemplateaddon'
+	    extName 'assistedservicestorefront'
+	    extName 'assistedservicewebservices'
+	    extName 'assistedservicepromotionaddon'
+
+        extName 'pcmbackofficesamplesaddon'
+
+		extName 'personalizationintegration'
+		extName 'hybrisanalyticsaddon'
+        extName 'eventtrackingwsaddon'
+
+        extName 'y2ysync'
+        extName 'y2ysyncbackoffice'
+		
+        extName 'sapymktcommon'
+        extName 'sapymktsync'
+        extName 'sapymktclickstream'
+		extName 'sapymktrecommendation'
+		extName 'sapymktrecommendationaddon'
+		extName 'sapymktrecommendationbuffer'
+		extName 'sapymktrecommendationwebservices'
+		extName 'sapymktsegmentation'
+		extName 'sapymktsegmentationwebservices'
+		extName 'sapymktconsent'
+		extName 'personalizationymkt'		
+
+        /* integration-apis */
+		extName 'outboundservices'
+		extName 'odata2webservices'
+		extName 'odata2webservicesfeaturetests'
+
+        extName 'kymaintegrationbackoffice'
+    }
+}
+
+def pl = platformFactory.createPlatform config
+
+task setup {
+	doLast {
+		pl.addons {
+			forStoreFronts('yacceleratorstorefront'){
+				names 'commerceorgsamplesaddon','promotionenginesamplesaddon','smarteditaddon','textfieldconfiguratortemplateaddon','assistedservicestorefront','assistedservicepromotionaddon','customerticketingaddon','orderselfserviceaddon','adaptivesearchsamplesaddon','multicountrysampledataaddon','pcmbackofficesamplesaddon','hybrisanalyticsaddon','eventtrackingwsaddon','sapymktrecommendationaddon','personalizationsearchsamplesaddon'
+				template 'yacceleratorstorefront'
+			}
+		}
+		pl.addons {
+			forStoreFronts('ycommercewebservices'){
+				names 'acceleratorwebservicesaddon'
+				template 'ycommercewebservices'
+			}
+		}
+    	pl.setup()
+	}
+}
+
+task start {
+	doLast {
+		pl.startInBackground()
+	}
+}
+
+task stop {
+	doLast {
+		pl.stopInBackground()
+	}	
+}
+
+task initialize {
+	doLast {
+		pl.build()
+	    pl.initialize()
+	}
+}
