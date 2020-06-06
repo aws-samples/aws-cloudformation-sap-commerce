@@ -1,4 +1,4 @@
-# SAP Commerce on AWS
+# SAP Commerce 1905 on AWS
 ## Introduction
 
 There are two versions of SAP Commerce, one is available from SAP as a SaaS solution and another on that is available for customers who prefer to manage their own commerce software stack. This solution deploys the on-premise version leveraging AWS technologies. By deploying this solution on the AWS Cloud, you can take advantage of the fully managed services along with the flexibility to tailor the architecture choices for your infrastructure. 
