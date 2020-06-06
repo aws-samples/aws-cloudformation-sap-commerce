@@ -144,9 +144,7 @@ else
 fi
 
 #Cleanup installation directory
-#if [[ ${DEBUG} == '0' ]]; then
-#    rm -Rf /root/install
-#fi
+rm -Rf /root/install/
 
 echo "Finished Bootstrapping"
 
