@@ -1,12 +1,11 @@
 # SAP Commerce 1905 on AWS
 ## Introduction
 
-There are two versions of SAP Commerce, one is available from SAP as a SaaS solution and another on that is available for customers who prefer to manage their own commerce software stack. This solution deploys the on-premise version leveraging AWS technologies. By deploying this solution on the AWS Cloud, you can take advantage of the fully managed services along with the flexibility to tailor the architecture choices for your infrastructure. 
+This solution deploys the on-premise version of SAP Commerce 1905 on AWS. By deploying this solution on the AWS Cloud, you can take advantage of the fully managed services along with the flexibility to tailor the architecture choices for your infrastructure. 
 
 ## Deployment Guide
 
-This CloudFormation template helps you rapidly deploy an SAP Commerce system on an EC2 instance for demo and development. Please note that this is not designed for production.
-Deployment Steps
+This CloudFormation template helps you rapidly deploy an SAP Commerce system on an EC2 instance for demo and development. Please note that this is not designed for production. This cloudformation use the SAP installer recipes included with SAP Commerce to set up a preconfigured environment quickly using the default HSQLDB.  
 
 Step 1. Prepare an AWS account
 1. This involves signing up for an AWS account, choosing a region, VPC, security group and an IAM role for Amazon EC2. If you don't already have an AWS account. Follow the step-by-step instruction, see the [AWS account deployment guide]( https://aws.amazon.com/premiumsupport/knowledge-center/create-and-activate-aws-account/).
@@ -25,4 +24,4 @@ Step 4. Access SAP Commerce to verify your deployment
 You can access SAP Commerce by IP address and the default port 9002 via your web browser 
 
 Step 5. Complete any post-deployment tasks
-Before you start using SAP Commerce on AWS, change the initial password and make sure that your system is backed up and configured correctly.
+Before you start using SAP Commerce on AWS, change the initial password and make sure that your system is backed up and configured correctly. Refer to the AWS blog on how you can improve this issue template to leverage Amazon Aurora Serverless and Amazon EC2 Hibernation. 
