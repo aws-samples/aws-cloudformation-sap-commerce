@@ -25,4 +25,4 @@ Step 4. Access SAP Commerce to verify your deployment
 You can access SAP Commerce by IP address and the default port 9002 via your web browser 
 
 Step 5. Complete any post-deployment tasks
-Before you start using SAP Commerce on AWS, check for the latest updates and make sure that your system is backed up and configured correctly.
+Before you start using SAP Commerce on AWS, change the initial password and make sure that your system is backed up and configured correctly.
