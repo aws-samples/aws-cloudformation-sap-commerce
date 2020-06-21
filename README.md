@@ -1,7 +1,7 @@
-# SAP Commerce 1905 on AWS
+# SAP Commerce on AWS
 ## Introduction
 
-This solution deploys the on-premise version of SAP Commerce 1905 on AWS. By deploying this solution on the AWS Cloud, you can take advantage of the fully managed services along with the flexibility to tailor the architecture choices for your infrastructure. 
+This solution deploys the on-premise version of SAP Commerce on AWS. By deploying this solution on the AWS Cloud, you can take advantage of the fully managed services along with the flexibility to tailor the architecture choices for your infrastructure. 
 
 ## Deployment Guide
 
@@ -15,7 +15,7 @@ Step 1. Prepare an AWS account
 5.	Create an AWS IAM Role for Amazon EC2 with policy to access your S3 bucket and enable AWS system manager. Follow the step-by-step instruction, see the [AWS IAM Role for EC2 deployment guide]( https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-roles-for-amazon-ec2.html). 
 
 Step 2. Download the SAP Commerce software 
-This step involves downloading the SAP Commerce 1905 software from SAP and placing the files in an S3 bucket. 
+This step involves downloading the SAP Commerce software (1905 or 2005) from SAP and placing the files in an S3 bucket. 
 
 Step 3. Launch the stack
 In this step, you’ll launch the AWS CloudFormation template into your AWS account, specify parameter values, and create the stack. 
@@ -24,4 +24,4 @@ Step 4. Access SAP Commerce to verify your deployment
 You can access SAP Commerce by IP address and the default port 9002 via your web browser 
 
 Step 5. Complete any post-deployment tasks
-Before you start using SAP Commerce on AWS, change the initial password and make sure that your system is backed up and configured correctly. Refer to the AWS blog on how you can leverage Amazon Aurora Serverless and Amazon EC2 Hibernation for SAP Commerce on AWS. 
+Before you start using SAP Commerce on AWS, change the initial password and make sure that your system is backed up and configured correctly. Refer to the [SAP Commerce on AWS blog](https://aws.amazon.com/blogs/awsforsap/driving-new-levels-of-agility-for-your-sap-workloads-an-example-with-sap-commerce/) on how you can leverage Amazon Aurora Serverless and Amazon EC2 Hibernation for SAP Commerce on AWS. 
