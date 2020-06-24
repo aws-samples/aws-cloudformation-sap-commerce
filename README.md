@@ -14,9 +14,14 @@ Step 1. Prepare an AWS account
 4.	Create an AWS Security Group for SAP Commerce. You will need to open the default  port 9002 to access SAP Commerce. Follow the step-by-step instruction, see the [AWS Security Group deployment guide](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html).
 5.	Create an AWS IAM Role for Amazon EC2 with policy to access your S3 bucket and enable AWS system manager. Follow the step-by-step instruction, see the [AWS IAM Role for EC2 deployment guide]( https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-roles-for-amazon-ec2.html). 
 
-Step 2. Download the SAP Commerce software 
+Step 2. Download the SAP Commerce software
 
-This step involves downloading the SAP Commerce software (1905 or 2005) from SAP and placing the files in an S3 bucket. 
+This step involves downloading the SAP Commerce software (1905 or 2005) from SAP and placing the files in an S3 bucket.  
+
+For example, if you have s3://<S3 Bucket>/<Binaries>/CXCOM200500P_0-70004955.ZIP
+
+The parameter SWS3BucketName is the S3 bucket name <S3 Bucket>
+The parameter SWS3KeyPrefix is the S3 bucket folder <Binaries>
 
 Step 3. Launch the stack
 
