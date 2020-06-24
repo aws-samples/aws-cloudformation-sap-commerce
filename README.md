@@ -46,4 +46,4 @@ You can access SAP Commerce by IP address and the default port 9002 via your web
 
 ### Step 6. Complete any post-deployment tasks
 
-Before you start using SAP Commerce on AWS, change the initial password and make sure that your system is backed up and configured correctly. Refer to the [SAP Commerce on AWS blog](https://aws.amazon.com/blogs/awsforsap/driving-new-levels-of-agility-for-your-sap-workloads-an-example-with-sap-commerce/) on how you can leverage Amazon Aurora Serverless and Amazon EC2 Hibernation for SAP Commerce on AWS. 
+Before you start using SAP Commerce on AWS, change the initial password and make sure that your system is backed up and configured correctly. Refer to the [SAP Commerce on AWS blog](https://aws.amazon.com/blogs/awsforsap/driving-new-levels-of-agility-for-your-sap-workloads-an-example-with-sap-commerce/) on how you can leverage Amazon Aurora Serverless and Amazon EC2 Hibernation for SAP Commerce on AWS. THe JDBC driver for Amazon Aurora can be downloaded [here](https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-8.0.19.zip). 
