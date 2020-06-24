@@ -21,6 +21,7 @@ This step involves downloading the SAP Commerce software (1905 or 2005) from SAP
 For example, if you have s3://[S3 Bucket]/[Binaries]/CXCOM200500P_0-70004955.ZIP
 
 The parameter SWS3BucketName is the S3 bucket name [S3 Bucket]
+
 The parameter SWS3KeyPrefix is the S3 bucket folder [Binaries]
 
 Step 3. Launch the stack
