@@ -14,24 +14,36 @@ Step 1. Prepare an AWS account
 - [ ] Create an AWS Security Group for SAP Commerce. You will need to open the default  port 9002 to access SAP Commerce. Follow the step-by-step instruction, see the [AWS Security Group deployment guide](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html).
 - [ ] Create an AWS IAM Role for Amazon EC2 with policy to access your S3 bucket and enable AWS system manager. Follow the step-by-step instruction, see the [AWS IAM Role for EC2 deployment guide]( https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-roles-for-amazon-ec2.html). 
 
-Step 2. Download the SAP Commerce software
+Step 2. Download the SAP Commerce software and upload to an Amazon S3 bucket
 
 This step involves downloading the SAP Commerce software (1905 or 2005) from SAP and placing the files in an S3 bucket.  
 
-For example, if you have s3://[S3 Bucket]/[Binaries]/CXCOM200500P_0-70004955.ZIP
+For example, if you have s3://[S3 Bucket]/[binaries]/CXCOM200500P_0-70004955.ZIP
 
-- [ ] The parameter SWS3BucketName is the S3 bucket name [S3 Bucket]
+- [ ] The parameter "S3 Bucket Name for SAP Commerce Software" is the S3 bucket name, i.e. [S3 Bucket]
 
-- [ ] The parameter SWS3KeyPrefix is the S3 bucket folder [Binaries]
+- [ ] The parameter "S3 Key Prefix for SAP Commerce 1905 Software" is the folder within the S3 bucket, i.e. [binaries]
 
-Step 3. Launch the stack
+Step 3. Download the Scripts in this Github Repository and upload to an Amazon S3 bucket
+
+This step involves downloading this Github repository and placing the files in an S3 bucket. 
+
+For example, if you have s3://[S3 Bucket]/[scripts]/
+
+- [ ] The parameter "S3 Bucket Name for Installation" is the S3 bucket name, i.e. [S3 Bucket]
+
+- [ ] The parameter "ScriptsS3KeyPrefix" is the folder within the S3 bucket, i.e. [scripts]
+
+Step 4. Launch the stack
 
 In this step, you’ll launch the AWS CloudFormation template into your AWS account, specify parameter values, and create the stack. 
 
-Step 4. Access SAP Commerce to verify your deployment
+- [ ] The parameter "InstanceRoleSAP" is the name for the IAM role that will be attached to the EC2 instance. 
+
+Step 5. Access SAP Commerce to verify your deployment
 
 You can access SAP Commerce by IP address and the default port 9002 via your web browser 
 
-Step 5. Complete any post-deployment tasks
+Step 6. Complete any post-deployment tasks
 
 Before you start using SAP Commerce on AWS, change the initial password and make sure that your system is backed up and configured correctly. Refer to the [SAP Commerce on AWS blog](https://aws.amazon.com/blogs/awsforsap/driving-new-levels-of-agility-for-your-sap-workloads-an-example-with-sap-commerce/) on how you can leverage Amazon Aurora Serverless and Amazon EC2 Hibernation for SAP Commerce on AWS. 
