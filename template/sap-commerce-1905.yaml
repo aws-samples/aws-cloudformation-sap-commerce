@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: >-
-  This is an installation of SAP Commerce 1905 for development and demonstration
+  This is an installation of SAP Commerce 1905/2005 for development and demonstration
   purposes. Do not use this template to install SAP Commerce in a production
   environment. It comes bundled and preconfigured with the lightweight HSQLDB
   database, which typically is sufficient for primary tests. 
@@ -51,9 +51,9 @@ Metadata:
       PrivateSubnet1ID:
         default: Private Subnet ID 1
       SWS3BucketName:
-        default: S3 Bucket Name for SAP Commerce 1905 Software
+        default: S3 Bucket Name for SAP Commerce Software (1905 or 2005)
       SWS3KeyPrefix:
-        default: S3 Key Prefix for SAP Commerce 1905 Software
+        default: S3 Key Prefix for SAP Commerce Software (1905 or 2005)
       ScriptsS3BucketName:
         default: S3 Bucket Name for Installation
       ScriptsS3Prefix:
@@ -574,7 +574,7 @@ Resources:
 
       Tags:
         - Key: Name
-          Value: SAP Commerce 1905 on AWS
+          Value: SAP Commerce on AWS
     CreationPolicy:
       ResourceSignal:
         Timeout: PT120M
