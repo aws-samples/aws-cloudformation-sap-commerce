@@ -40,6 +40,10 @@ In this step, you’ll launch the AWS CloudFormation template into your AWS acco
 
 - [ ] The parameter "InstanceRoleSAP" is the name for the IAM role that will be attached to the EC2 instance. 
 
+The quickest way to do this is using AWSCLI, an example input parameters are shown below. 
+
+aws cloudformation create-stack --region=us-east-1 --stack-name hybris-stack --template-url https://sap-on-aws-blog.s3.us-east-2.amazonaws.com/hybris/templates/sap-commerce-1905.yaml --parameters ParameterKey=InitialPassword,ParameterValue=nimda ParameterKey=InstanceRoleSAP,ParameterValue=sap-on-aws-blog-instacne-role ParameterKey=KeyPairName,ParameterValue=sap-on-aws-blog-key-pair ParameterKey=LinuxAMIOS,ParameterValue=Amazon-Linux2-HVM ParameterKey=InstanceType,ParameterValue=m5.xlarge ParameterKey=PDatabaseHostName,ParameterValue=saponaws ParameterKey=PrivateSubnet1ID,ParameterValue=subnet-0abd41f8ec0f9ca23 ParameterKey=Recipe,ParameterValue=b2c_acc_plus  ParameterKey=SWS3BucketName,ParameterValue=sap-on-aws-blog-sw ParameterKey=Version,ParameterValue=2005 ParameterKey=SWS3KeyPrefix,ParameterValue=sap-on-aws-blog/core2005 ParameterKey=CreateDocker,ParameterValue=False ParameterKey=ScriptsS3BucketName,ParameterValue=sap-on-aws-blog ParameterKey=ScriptsS3KeyPrefix,ParameterValue=hybris/scripts ParameterKey=SecurityGroupID,ParameterValue=sg-123456789012345678  ParameterKey=VPCID,ParameterValue=vpc-123456789012345678 ParameterKey=OSImageOverride,ParameterValue=ami-123456789012345678  --on-failure DO_NOTHING --capabilities CAPABILITY_IAM
+
 ### Step 5. Access SAP Commerce to verify your deployment
 
 You can access SAP Commerce by IP address and the default port 9002 via your web browser 

@@ -1,5 +1,6 @@
 #!/bin/bash
-# SAP Commerce 1905 Bootstraping
+# SAP Commerce 1905 or 2005 Bootstraping (Developer Edition)
+# This script is written for the AWS blog post is not design for production use 
 # Author : patleung@amazon.com
 
 ################ Functions ################ 
@@ -77,6 +78,8 @@ if [ -f ${PARAMS_FILE} ]; then
     INITIALPASSWORD=`grep 'InitialPassword' ${PARAMS_FILE} | awk -F'|' '{print $2}' | sed -e 's/^ *//g;s/ *$//g' | sed 's/\/$//g'`
     RECIPE=`grep 'Recipe' ${PARAMS_FILE} | awk -F'|' '{print $2}' | sed -e 's/^ *//g;s/ *$//g'`
     PHOSTNAME=`grep 'PDatabaseHostName' ${PARAMS_FILE} | awk -F'|' '{print $2}' | sed -e 's/^ *//g;s/ *$//g'`
+    VERSION=`grep 'Version' ${PARAMS_FILE} | awk -F'|' '{print $2}' | sed -e 's/^ *//g;s/ *$//g'`
+    DOCKER=`grep 'CreateDocker' ${PARAMS_FILE} | awk -F'|' '{print $2}' | sed -e 's/^ *//g;s/ *$//g'`
 
 else
     echo "Paramaters file not found or accessible."
@@ -114,9 +117,7 @@ unzip $HYBRISDIR/*.ZIP
 echo "Removing the Hybris Installation zip file.."
 rm $HYBRISDIR/*.ZIP
 
-echo "Set initial password.."
-aws s3 sync s3://$SCRIPTS3BUCKET/$SCRIPTKEYPREFIX/$RECIPE $HYBRISDIR/installer/recipes/$RECIPE
-sed -i  "s/nimda/$INITIALPASSWORD/g"  $HYBRISDIR/installer/recipes/$RECIPE/build.gradle
+echo $VERSION
 
 echo "Installing Java .."
 cd $HYBRISDIR
@@ -130,12 +131,71 @@ export JAVA_HOME=/usr/lib/jvm/sapmachine-11
 echo "Java Version: "
 java -version
 
+echo "Setup SAP Commerce"
+
+if [ "$VERSION" = 1905 ]
+then
+    echo "set up recipe for 1905 and password"
+    aws s3 sync s3://$SCRIPTS3BUCKET/$SCRIPTKEYPREFIX/$RECIPE $HYBRISDIR/installer/recipes/$RECIPE
+    sed -i  "s/nimda/$INITIALPASSWORD/g"  $HYBRISDIR/installer/recipes/$RECIPE/build.gradle
+    $HYBRISDIR/installer/install.sh -r $RECIPE initialize
+else
+    echo "set up recipe for 2005 and password"
+    aws s3 sync s3://$SCRIPTS3BUCKET/$SCRIPTKEYPREFIX/$RECIPE $HYBRISDIR/installer/recipes/$RECIPE
+    $HYBRISDIR/installer/install.sh -r $RECIPE -A initAdminPassword=$INITIALPASSWORD
+    $HYBRISDIR/installer/install.sh -r $RECIPE	initialize -A initAdminPassword=$INITIALPASSWORD
+fi
+
+# Creating docker image
+if [ "$DOCKER" = True ]
+then
+    echo "Build Docker image"
+
+    cd $HYBRISDIR/hybris/bin/platform/
+    . $HYBRISDIR/hybris/bin/platform/setantenv.sh     
+
+    ant clean all
+
+    ant production -Dproduction.include.tomcat=false -Dproduction.legacy.mode=false -Dtomcat.legacy.deployment=false -Dproduction.create.zip=false
+
+    ant createPlatformImageStructure
+
+    echo "Start Docker"
+    amazon-linux-extras install docker -y
+    yum install jq -y
+
+    service docker start
+
+    echo "Create Docker Image"
+
+    cd /usr/sap/hybris/temp/hybris/platformimage-*
+
+    REPO=sap-commerce-repository
+    AWS_ACCOUNT=$(curl http://169.254.169.254/latest/meta-data/identity-credentials/ec2/info | jq -r .AccountId)
+    REGION=$(curl http://169.254.169.254/latest/meta-data/placement/region)
+
+    docker build -t $REPO .
+
+    echo "Create ECR repository"
+
+    aws ecr create-repository --repository-name $REPO --region $REGION
+
+    docker tag $REPO:latest $AWS_ACCOUNT.dkr.ecr.$REGION.amazonaws.com/$REPO:latest
+
+    aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT.dkr.ecr.$REGION.amazonaws.com
+
+    echo "Push Image to Amazon ECR"
+
+    docker push $AWS_ACCOUNT.dkr.ecr.$REGION.amazonaws.com/$REPO:latest
+
+fi
+
+# Start Hybris
+
 echo "Start Hybris.."
-$HYBRISDIR/installer/install.sh -r $RECIPE			
-$HYBRISDIR/installer/install.sh -r $RECIPE initialize
 $HYBRISDIR/installer/install.sh -r $RECIPE start &
 
-# Check Database instance Status
+# Check Tomcat Status
 if ps -ef | grep tomcat; then
     echo "SAP_COMMERCE_INSTALL|SUCCESS"
 else
@@ -144,9 +204,6 @@ else
 fi
 
 #Cleanup installation directory
-rm -Rf /root/install/
+#rm -Rf /root/install/
 
 echo "Finished Bootstrapping"
-
-
-

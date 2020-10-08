@@ -15,7 +15,7 @@ Metadata:
           - SecurityGroupID
           - InstanceRoleSAP
       - Label:
-          default: SAP Server Configuration
+          default: Commerce Server Configuration
         Parameters:
           - KeyPairName
           - LinuxAMIOS
@@ -24,6 +24,7 @@ Metadata:
           - InitialPassword
           - Recipe
           - OSImageOverride
+          - CreateDocker
       - Label:
           default: S3 Bucket Configuration
         Parameters:
@@ -32,6 +33,8 @@ Metadata:
           - ScriptsS3BucketName
           - ScriptsS3KeyPrefix
     ParameterLabels:
+      CreateDocker:
+        default: Create Docker Image
       SecurityGroupID:
         default: Security Group ID
       InsanceRole:
@@ -50,6 +53,8 @@ Metadata:
         default: Instance Type
       PrivateSubnet1ID:
         default: Private Subnet ID 1
+      Version:
+        default: SAP Commerce Version
       SWS3BucketName:
         default: S3 Bucket Name for SAP Commerce Software (1905 or 2005)
       SWS3KeyPrefix:
@@ -63,6 +68,12 @@ Metadata:
       VPCID:
         default: VPC ID
 Parameters:
+  CreateDocker:
+    Description: 'Create Platform Image (e.g. True or False)'
+    Type: String
+    AllowedValues:
+        - "True"
+        - "False"
   SecurityGroupID:
     Description: 'ID of the SAP Security Group (e.g., sg-7f16e910)'
     Type: 'AWS::EC2::SecurityGroup::Id'
@@ -72,6 +83,15 @@ Parameters:
   InitialPassword:
     Description: Initial Password.
     Type: String
+  Version:
+    ConstraintDescription: >-
+      Must be 1905 or 2005
+    Description: >-
+      SAP Commerce 1905
+    Type: String
+    AllowedValues:
+      - '1905'
+      - '2005'
   OSImageOverride:
     Description: The Region-specific image to use for the instance.
     Type: String
@@ -106,6 +126,10 @@ Parameters:
     ConstraintDescription: must be the name of an existing EC2 KeyPair.
     Description: Name of an existing EC2 KeyPair to enable SSH access to the instance
     Type: 'AWS::EC2::KeyPair::KeyName'
+  Version:
+    Default: '2005'
+    Description: SAP Commerce Version
+    Type: String
   LinuxAMIOS:
     Default: Amazon-Linux2-HVM
     Description: The Linux distribution for the AMI to be used for the instances.
@@ -272,6 +296,9 @@ Parameters:
   VPCID:
     Description: 'ID of the VPC (e.g., vpc-0343606e)'
     Type: 'AWS::EC2::VPC::Id'
+  Version:
+    Description: 'Version of SAP Commerce'
+    Type: String
 Rules:
   SubnetsInVPC:
     Assertions:
@@ -481,6 +508,8 @@ Resources:
                       Recipe|${Recipe}
                       InstanceType|${InstanceType}
                       PDatabaseHostName|${PDatabaseHostName}
+                      Version|${Version}
+                      CreateDocker|${CreateDocker}
                     - QuickStartS3URL: !If 
                         - GovCloudCondition
                         - 'https://s3-us-gov-west-1.amazonaws.com'
