@@ -98,15 +98,16 @@ Parameters:
     Default: ''
   Recipe:
     ConstraintDescription: >-
-      must be one of the 15 recipes listed, b2b_acc_plus, b2c_acc_cis,
-      b2c_b2b_acc_cpq, b2c_c4c, marketplace_acc_china, b2b_c4c, b2c_acc_plus,
-      b2c_b2b_acc_dp, b2c_china, sap_aom_som_b2b_b2c, b2b_china, b2c_acc_ymkt,
-      b2c_b2b_acc_oms, marketplace_acc, sap_oms_aom_b2b_b2c
+      must be one of the recipes listed for 1905 or 2005, For 2005, this is b2b_china,  b2c_acc_plus, b2c_china,cx, cx_old_occ and marketplace_acc_china. For 1905, this is 
+      b2b_acc_plus, b2c_acc_cis, b2c_b2b_acc_cpq, b2c_c4c, marketplace_acc_china, b2b_c4c, b2c_acc_plus, b2c_b2b_acc_dp, b2c_china, sap_aom_som_b2b_b2c, b2b_china, b2c_acc_ymkt,
+      b2c_b2b_acc_oms, marketplace_acc, sap_oms_aom_b2b_b2c. 
     Description: >-
       Gradle recipes take care of creating directories, moving files, updating
       configuration and properties files, and initializing the system.
     Type: String
     AllowedValues:
+      - cx
+      - cx_old_occ 
       - b2b_acc_plus
       - b2c_acc_cis
       - b2c_b2b_acc_cpq
