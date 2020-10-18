@@ -18,11 +18,11 @@ This CloudFormation template helps you rapidly deploy an SAP Commerce system on 
 
 This step involves downloading the SAP Commerce software (1905 or 2005) from SAP and placing the files in an S3 bucket.  
 
-For example, if you have s3://[S3 Bucket]/[binaries]/CXCOM200500P_0-70004955.ZIP
+For example, if you have s3://[S3 Bucket]/[S3 Folder]/CXCOM200500P_0-70004955.ZIP
 
-- [ ] The parameter "S3 Bucket Name for SAP Commerce Software" is the S3 bucket name, i.e. [S3 Bucket]
+- [ ] The parameter "S3 Bucket Name for SAP Commerce Software" is the S3 bucket name, i.e. [S3 Bucket Name]
 
-- [ ] The parameter "S3 Key Prefix for SAP Commerce 1905 Software" is the folder within the S3 bucket, i.e. [binaries]
+- [ ] The parameter "S3 Key Prefix for SAP Commerce 1905 Software" is the folder within the S3 bucket, i.e. [S3 Folder Name]
 
 ### Step 3. Download the Scripts in this Github Repository and upload to an Amazon S3 bucket
 
@@ -30,7 +30,7 @@ This step involves downloading this Github repository and placing the files in a
 
 For example, if you have s3://[S3 Bucket]/[scripts]/
 
-- [ ] The parameter "S3 Bucket Name for Installation" is the S3 bucket name, i.e. [S3 Bucket]
+- [ ] The parameter "S3 Bucket Name for Installation" is the S3 bucket name, i.e. [S3 Bucket Name]
 
 - [ ] The parameter "ScriptsS3KeyPrefix" is the folder within the S3 bucket, i.e. [scripts]
 
