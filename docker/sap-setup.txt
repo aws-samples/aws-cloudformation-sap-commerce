@@ -1,0 +1,10 @@
+SWS3BucketName|<s3 bucket name for hybris software>
+SWS3KeyPrefix|<s3 key prifix for hybris software>
+ScriptsS3BucketName|<s3 bucket name for scripts>
+ScriptsS3KeyPrefix|<s3 key prifix for hybris scripts>
+InitialPassword|<initial password>
+Recipe|cx
+InstanceType|m5.4xlarge
+PDatabaseHostName|saponaws
+Version|2005
+CreateDocker|False
