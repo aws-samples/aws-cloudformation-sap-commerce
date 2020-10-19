@@ -29,7 +29,7 @@ The quickest way to do this is using AWSCLI.
     $ aws cloudformation create-stack --region=<AWS region> --stack-name <stack name> --template-url <CFN template on S3> --parameters ParameterKey=InitialPassword,ParameterValue=<initial password> ParameterKey=InstanceRoleSAP,ParameterValue=< the name of the instance role to be attached to your EC2 instance > ParameterKey=KeyPairName,ParameterValue=<your EC2 key pair> ParameterKey=LinuxAMIOS,ParameterValue=Amazon-Linux2-HVM ParameterKey=InstanceType,ParameterValue=<instance type> ParameterKey=PDatabaseHostName,ParameterValue=<Hostname> ParameterKey=PrivateSubnet1ID,ParameterValue=<subnet ID> ParameterKey=Recipe,ParameterValue=<SAP Commerce recipe>  ParameterKey=SWS3BucketName,ParameterValue=<S3 bucket> ParameterKey=Version,ParameterValue=2005 ParameterKey=SWS3KeyPrefix,ParameterValue=< S3 folder hosting SAP Commerce Software >  ParameterKey=CreateDocker,ParameterValue=False ParameterKey=ScriptsS3BucketName,ParameterValue=<S3 bucket hosting scripts in this Github>  ParameterKey=ScriptsS3KeyPrefix,ParameterValue=<S3 folder hosting scripts>  ParameterKey=SecurityGroupID,ParameterValue=<security group ID >  ParameterKey=VPCID,ParameterValue=<VPC ID> ParameterKey=OSImageOverride,ParameterValue=< your custom AMI if needed > --on-failure DO_NOTHING --capabilities CAPABILITY_IAM
 
 | Parameter | Example Value | 
-|---------|-------------|-------------|
+|---------|-------------|
 |region| us-east-1 |
 |stack-name| sap-commerce |
 |template-url| https://<S3 bucket>.s3.<AWS region>.amazonaws.com/hybris/templates/sap-commerce-1905.yaml | 
