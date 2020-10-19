@@ -35,11 +35,11 @@ The quickest way to do this is using AWSCLI.
 |template-url| https://<S3 bucket>.s3.<AWS region>.amazonaws.com/hybris/templates/sap-commerce-1905.yaml | 
 |InitialPassword| nimda |
 |InstanceRoleSAP| Admin-EC2 |
-|KeyPairName||
+|KeyPairName|my-default-key-pair|
 |LinuxAMIOS|Amazon-Linux2-HVM |
 |InstanceType|m5.xlarge|
 |PDatabaseHostName|saponaws|
-|PrivateSubnet1ID||
+|PrivateSubnet1ID|subnet-1234567891011|
 |Recipe|cx|
 |SWS3BucketName|sap-on-aws-blog|
 |SWS3KeyPrefix|hybris/core2005|
