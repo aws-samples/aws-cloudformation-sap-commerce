@@ -32,7 +32,7 @@ The quickest way to do this is using AWSCLI.
 |---------|-------------|
 |region| us-east-1 |
 |stack-name| sap-commerce |
-|template-url| https://<S3 bucket>.s3.<AWS region>.amazonaws.com/hybris/templates/sap-commerce-1905.yaml | 
+|template-url| https://\<S3 bucket\>.s3.\<AWS region\>.amazonaws.com/hybris/templates/sap-commerce-1905.yaml | 
 |InitialPassword| nimda |
 |InstanceRoleSAP| Admin-EC2 |
 |KeyPairName|my-default-key-pair|
