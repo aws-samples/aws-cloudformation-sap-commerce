@@ -11,3 +11,6 @@ RUN bash /tmp/bootstrap.sh --params_file /tmp/sap-setup.txt > /tmp/bootstrap.log
 
 # expose server port
 EXPOSE 9002
+
+# start the hybris platform
+CMD export JAVA_HOME=/usr/lib/jvm/sapmachine-11 && /usr/sap/installer/install.sh -r cx start &
