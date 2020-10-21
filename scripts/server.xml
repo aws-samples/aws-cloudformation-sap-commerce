@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright (c) 2020 SAP SE or an SAP affiliate company. All rights reserved.
+-->
+<!-- Note:  A "Server" is not itself a "Container", so you may not
+     define subcomponents such as "Valves" at this level.
+     Documentation at /docs/config/server.html
+-->
+<Server port="8005" shutdown="SHUTDOWN">
+
+	
+
+	<Listener className="org.apache.catalina.startup.VersionLoggerListener" />
+
+	<Service name="Catalina">
+
+		
+
+		<Executor name="hybrisExecutor"
+			namePrefix="hybrisHTTP"
+			maxThreads="200"
+			minSpareThreads="40"
+			maxIdleTime="10000" />
+
+		<Connector
+			port="${ENV::HTTP_PORT}"
+			maxHttpHeaderSize="8192"
+			protocol="HTTP/1.1"
+			executor="hybrisExecutor"
+			enableLookups="false"
+			acceptCount="100"
+			connectionTimeout="20000"
+			disableUploadTimeout="true"
+			URIEncoding="UTF-8" />
+
+		<Connector
+			port="${ENV::AJP_PORT}"
+			protocol="AJP/1.3"
+			executor="hybrisExecutor" />
+
+		<Engine
+			name="Catalina"
+			defaultHost="localhost"
+			jvmRoute="${ENV::JVM_ROUTE}">
+
+			
+
+			<Host
+				name="localhost"
+				unpackWARs="true"
+				autoDeploy="true"
+				startStopThreads="0">
+				<Valve
+					className="org.apache.catalina.valves.ErrorReportValve"
+					showReport="${ENV::ERROR_SHOW_REPORT}"
+					showServerInfo="${ENV::ERROR_SHOW_SERVER_INFO}" />
+				<Valve
+					className="de.hybris.tomcat.StoreJvmRouteAsContextParameterValve" />
+				<Valve
+					className="org.apache.catalina.valves.AccessLogValve"
+					directory="${ENV::ACCESS_LOG_DIR}"
+					prefix="${ENV::ACCESS_LOG_PREFIX}"
+					suffix="${ENV::ACCESS_LOG_SUFFIX}"
+					pattern="${ENV::ACCESS_LOG_PATTERN}" />
+
+				
+
+			</Host>
+		</Engine>
+	</Service>
+</Server>

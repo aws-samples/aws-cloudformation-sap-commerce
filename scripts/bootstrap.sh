@@ -160,6 +160,10 @@ then
 
     ant createPlatformImageStructure
 
+    #Enable HTTP connection#
+
+    aws s3 cp s3://$SCRIPTS3BUCKET/$SCRIPTKEYPREFIX/server.xml $HYBRISDIR/hybris/temp/hybris/platformimage-*/aspects/default/tomcat/conf/server.xml
+
     echo "Start Docker"
     amazon-linux-extras install docker -y
     yum install jq -y
