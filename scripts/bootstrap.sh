@@ -163,6 +163,8 @@ then
     #Enable HTTP connection#
 
     aws s3 cp s3://$SCRIPTS3BUCKET/$SCRIPTKEYPREFIX/server.xml $HYBRISDIR/hybris/temp/hybris/platformimage-*/aspects/default/tomcat/conf/server.xml
+    aws s3 cp s3://$SCRIPTS3BUCKET/$SCRIPTKEYPREFIX/Dockerfile $HYBRISDIR/hybris/temp/hybris/platformimage-*/
+    aws s3 cp $HYBRISDIR/hybris/bin/platform/tomcat/lib/keystore $HYBRISDIR/hybris/temp/hybris/platformimage-*/
 
     echo "Start Docker"
     amazon-linux-extras install docker -y
@@ -174,7 +176,7 @@ then
 
     cd /usr/sap/hybris/temp/hybris/platformimage-*
 
-    REPO=sap-commerce-repository
+    REPO=sap-commerce-repo
     AWS_ACCOUNT=$(curl http://169.254.169.254/latest/meta-data/identity-credentials/ec2/info | jq -r .AccountId)
     REGION=$(curl http://169.254.169.254/latest/meta-data/placement/region)
 
