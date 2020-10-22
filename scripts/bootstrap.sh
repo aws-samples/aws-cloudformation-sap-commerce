@@ -164,7 +164,7 @@ then
 
     aws s3 cp s3://$SCRIPTS3BUCKET/$SCRIPTKEYPREFIX/server.xml $HYBRISDIR/hybris/temp/hybris/platformimage-*/aspects/default/tomcat/conf/server.xml
     aws s3 cp s3://$SCRIPTS3BUCKET/$SCRIPTKEYPREFIX/Dockerfile $HYBRISDIR/hybris/temp/hybris/platformimage-*/
-    aws s3 cp $HYBRISDIR/hybris/bin/platform/tomcat/lib/keystore $HYBRISDIR/hybris/temp/hybris/platformimage-*/
+    cp $HYBRISDIR/hybris/bin/platform/tomcat/lib/keystore $HYBRISDIR/hybris/temp/hybris/platformimage-*/
 
     echo "Start Docker"
     amazon-linux-extras install docker -y
