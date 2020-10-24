@@ -592,7 +592,7 @@ Resources:
 
             - >
               /root/install/bootstrap.sh --params_file
-              /root/install/sap-setup.txt --primary &>>
+              /root/install/sap-setup.txt --primary >>
               /root/install/bootstrap.log
             - '/usr/bin/cfn-signal -e $? '
             - '         --stack '
