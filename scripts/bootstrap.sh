@@ -1,9 +1,9 @@
 #!/bin/bash
-# SAP Commerce 1905 or 2005 Bootstraping (Developer Edition)
-# This script is written for the AWS blog post is not design for production use 
+# SAP Commerce 1905 or 2005 Bootstraping 
+# This script is written for the AWS blog post is not design for production use. 
 # Author : patleung@amazon.com
 
-################ Functions ################ 
+################ Start of Functions ################ 
 function checkos() {
     platform='unknown'
     unamestr=`uname`
@@ -16,16 +16,130 @@ function checkos() {
 }
 
 function usage() {
-echo "$0 <usage>"
-echo " "
-echo "options:"
-echo -e "-h, --help \t show options for this script"
-echo -e "-v, --verbose \t specify to print out verbose bootstrap info"
-echo -e "--params_file \t specify the params_file to read (--params_file /root/install/sap-setup.txt)"
-echo -e "--primary \t specify for primary host"
-echo -e "--standby \t specify for standby host"
+    echo "$0 <usage>"
+    echo " "
+    echo "options:"
+    echo -e "-h, --help \t show options for this script"
+    echo -e "-v, --verbose \t specify to print out verbose bootstrap info"
+    echo -e "--params_file \t specify the params_file to read (--params_file /root/install/sap-setup.txt)"
+    echo -e "--primary \t specify for primary host"
+    echo -e "--standby \t specify for standby host"
 }
-################ Functions ################ 
+
+function create_docker_image() {
+    
+    echo "Build Docker image"
+
+    cd $HYBRISDIR/hybris/bin/platform/
+    . $HYBRISDIR/hybris/bin/platform/setantenv.sh     
+
+    ant clean all
+
+    ant production -Dproduction.include.tomcat=false -Dproduction.legacy.mode=false -Dtomcat.legacy.deployment=false -Dproduction.create.zip=false
+
+    ant createPlatformImageStructure
+
+    aws s3 cp s3://$SCRIPTS3BUCKET/$SCRIPTKEYPREFIX/server.xml $HYBRISDIR/hybris/temp/hybris/platformimage-*/aspects/default/tomcat/conf/server.xml
+    aws s3 cp s3://$SCRIPTS3BUCKET/$SCRIPTKEYPREFIX/Dockerfile $HYBRISDIR/hybris/temp/hybris/platformimage-*/
+    aws s3 cp s3://$SCRIPTS3BUCKET/$SCRIPTKEYPREFIX/startup.sh $HYBRISDIR/hybris/temp/hybris/platformimage-*/
+    aws s3 cp s3://$SCRIPTS3BUCKET/$SCRIPTKEYPREFIX/60-local.properties $HYBRISDIR/hybris/temp/hybris/platformimage-*/aspects/default/hybris/conf/
+    
+    cp $HYBRISDIR/hybris/bin/platform/tomcat/lib/keystore $HYBRISDIR/hybris/temp/hybris/platformimage-*/
+
+    echo "Start Docker"
+    amazon-linux-extras install docker -y
+    yum install jq -y
+
+    service docker start
+
+    echo "Create Docker Image"
+
+    cd /usr/sap/hybris/temp/hybris/platformimage-*
+
+    REPO=sap-commerce-repo
+    AWS_ACCOUNT=$(curl http://169.254.169.254/latest/meta-data/identity-credentials/ec2/info | jq -r .AccountId)
+    REGION=$(curl http://169.254.169.254/latest/meta-data/placement/region)
+
+    docker build -t $REPO .
+
+    echo "Create ECR repository"
+
+    aws ecr create-repository --repository-name $REPO --region $REGION
+
+    docker tag $REPO:latest $AWS_ACCOUNT.dkr.ecr.$REGION.amazonaws.com/$REPO:latest
+
+    aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT.dkr.ecr.$REGION.amazonaws.com
+
+    echo "Push Image to Amazon ECR"
+
+    docker push $AWS_ACCOUNT.dkr.ecr.$REGION.amazonaws.com/$REPO:latest
+
+}
+
+download_software(){
+    echo "Set Hybris directory..."
+    HYBRISDIR=/usr/sap
+
+    echo "Set hostname..."
+    hostname $PHOSTNAME
+    echo $PHOSTNAME > /etc/hostname
+
+    echo "Installing Unzip..."
+    yum -y install unzip
+
+    echo "Creating Hybris home directory..."
+    mkdir $HYBRISDIR
+    cd $HYBRISDIR
+
+    echo "Download Hybris software from S3 bucket..."
+    aws s3 sync s3://$SWS3BUCKET/$SWS3KEYPREFIX $HYBRISDIR
+    unzip $HYBRISDIR/*.ZIP
+
+    echo "Removing the Hybris Installation zip file.."
+    rm $HYBRISDIR/*.ZIP
+}
+
+install_java(){
+    echo "Installing Java .."
+    cd $HYBRISDIR
+    curl -L -O https://github.com/SAP/SapMachine/releases/download/sapmachine-11.0.4/sapmachine-jdk-11.0.4-1.x86_64.rpm
+    yum -y install $HYBRISDIR/sapmachine-jdk-11.0.4-1.x86_64.rpm
+    rm $HYBRISDIR/sapmachine-jdk-11.0.4-1.x86_64.rpm
+
+    echo "Setting JAVA_HOME Variable.."
+    export JAVA_HOME=/usr/lib/jvm/sapmachine-11
+
+    echo "Java Version: "
+    java -version
+}
+
+setup_1905(){
+    echo "set up recipe for 1905 and password"
+    aws s3 sync s3://$SCRIPTS3BUCKET/$SCRIPTKEYPREFIX/$RECIPE $HYBRISDIR/installer/recipes/$RECIPE
+    sed -i  "s/nimda/$INITIALPASSWORD/g"  $HYBRISDIR/installer/recipes/$RECIPE/build.gradle
+    $HYBRISDIR/installer/install.sh -r $RECIPE initialize
+}
+
+setup_2005(){
+    echo "set up recipe for 2005 and password"
+    aws s3 sync s3://$SCRIPTS3BUCKET/$SCRIPTKEYPREFIX/$RECIPE $HYBRISDIR/installer/recipes/$RECIPE
+    $HYBRISDIR/installer/install.sh -r $RECIPE -A initAdminPassword=$INITIALPASSWORD
+    $HYBRISDIR/installer/install.sh -r $RECIPE	initialize -A initAdminPassword=$INITIALPASSWORD
+}
+
+start_hybris(){
+    echo "Start Hybris.."
+    $HYBRISDIR/installer/install.sh -r $RECIPE start &
+
+    # Check Tomcat Status
+    if ps -ef | grep tomcat; then
+        echo "SAP_COMMERCE_INSTALL|SUCCESS"
+    else
+        echo "SAP_COMMERCE_INSTALL|FAILURE"
+        exit 1
+    fi
+}
+################ End of Functions ################ 
 
 ################ Start Script Logic ################ 
 checkos
@@ -95,119 +209,27 @@ if [[ ${VERBOSE} == 'true' ]]; then
     echo "RECIPE = ${RECIPE}"
 fi
 
+download_software
 
-echo "Set Hybris directory..."
-HYBRISDIR=/usr/sap
-
-echo "Set hostname..."
-hostname $PHOSTNAME
-echo $PHOSTNAME > /etc/hostname
-
-echo "Installing Unzip..."
-yum -y install unzip
-
-echo "Creating Hybris home directory..."
-mkdir $HYBRISDIR
-cd $HYBRISDIR
-
-echo "Download Hybris software from S3 bucket..."
-aws s3 sync s3://$SWS3BUCKET/$SWS3KEYPREFIX $HYBRISDIR
-unzip $HYBRISDIR/*.ZIP
-
-echo "Removing the Hybris Installation zip file.."
-rm $HYBRISDIR/*.ZIP
-
-echo $VERSION
-
-echo "Installing Java .."
-cd $HYBRISDIR
-curl -L -O https://github.com/SAP/SapMachine/releases/download/sapmachine-11.0.4/sapmachine-jdk-11.0.4-1.x86_64.rpm
-yum -y install $HYBRISDIR/sapmachine-jdk-11.0.4-1.x86_64.rpm
-rm $HYBRISDIR/sapmachine-jdk-11.0.4-1.x86_64.rpm
-
-echo "Setting JAVA_HOME Variable.."
-export JAVA_HOME=/usr/lib/jvm/sapmachine-11
-
-echo "Java Version: "
-java -version
+install_java
 
 echo "Setup SAP Commerce"
-
 if [ "$VERSION" = 1905 ]
 then
-    echo "set up recipe for 1905 and password"
-    aws s3 sync s3://$SCRIPTS3BUCKET/$SCRIPTKEYPREFIX/$RECIPE $HYBRISDIR/installer/recipes/$RECIPE
-    sed -i  "s/nimda/$INITIALPASSWORD/g"  $HYBRISDIR/installer/recipes/$RECIPE/build.gradle
-    $HYBRISDIR/installer/install.sh -r $RECIPE initialize
+    setup_1905
 else
-    echo "set up recipe for 2005 and password"
-    aws s3 sync s3://$SCRIPTS3BUCKET/$SCRIPTKEYPREFIX/$RECIPE $HYBRISDIR/installer/recipes/$RECIPE
-    $HYBRISDIR/installer/install.sh -r $RECIPE -A initAdminPassword=$INITIALPASSWORD
-    $HYBRISDIR/installer/install.sh -r $RECIPE	initialize -A initAdminPassword=$INITIALPASSWORD
+    setup_2005
 fi
 
 # Creating docker image
 if [ "$DOCKER" = True ]
 then
-    echo "Build Docker image"
-
-    cd $HYBRISDIR/hybris/bin/platform/
-    . $HYBRISDIR/hybris/bin/platform/setantenv.sh     
-
-    ant clean all
-
-    ant production -Dproduction.include.tomcat=false -Dproduction.legacy.mode=false -Dtomcat.legacy.deployment=false -Dproduction.create.zip=false
-
-    ant createPlatformImageStructure
-
-    #Enable HTTP connection#
-
-    aws s3 cp s3://$SCRIPTS3BUCKET/$SCRIPTKEYPREFIX/server.xml $HYBRISDIR/hybris/temp/hybris/platformimage-*/aspects/default/tomcat/conf/server.xml
-    aws s3 cp s3://$SCRIPTS3BUCKET/$SCRIPTKEYPREFIX/Dockerfile $HYBRISDIR/hybris/temp/hybris/platformimage-*/
-    cp $HYBRISDIR/hybris/bin/platform/tomcat/lib/keystore $HYBRISDIR/hybris/temp/hybris/platformimage-*/
-
-    echo "Start Docker"
-    amazon-linux-extras install docker -y
-    yum install jq -y
-
-    service docker start
-
-    echo "Create Docker Image"
-
-    cd /usr/sap/hybris/temp/hybris/platformimage-*
-
-    REPO=sap-commerce-repo
-    AWS_ACCOUNT=$(curl http://169.254.169.254/latest/meta-data/identity-credentials/ec2/info | jq -r .AccountId)
-    REGION=$(curl http://169.254.169.254/latest/meta-data/placement/region)
-
-    docker build -t $REPO .
-
-    echo "Create ECR repository"
-
-    aws ecr create-repository --repository-name $REPO --region $REGION
-
-    docker tag $REPO:latest $AWS_ACCOUNT.dkr.ecr.$REGION.amazonaws.com/$REPO:latest
-
-    aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT.dkr.ecr.$REGION.amazonaws.com
-
-    echo "Push Image to Amazon ECR"
-
-    docker push $AWS_ACCOUNT.dkr.ecr.$REGION.amazonaws.com/$REPO:latest
-
+    create_docker_image    
 fi
 
 # Start Hybris
 
-echo "Start Hybris.."
-$HYBRISDIR/installer/install.sh -r $RECIPE start &
-
-# Check Tomcat Status
-if ps -ef | grep tomcat; then
-    echo "SAP_COMMERCE_INSTALL|SUCCESS"
-else
-    echo "SAP_COMMERCE_INSTALL|FAILURE"
-    exit 1
-fi
+start_hybris
 
 #Cleanup installation directory
 #rm -Rf /root/install/
